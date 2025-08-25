@@ -80,6 +80,12 @@ std::string enum_to_string(T _enum)
     return std::string{magic_enum::enum_name(_enum)};
 }
 
+template<class T>
+std::optional<T> string_to_enum(std::string const& _str)
+{
+    return magic_enum::enum_cast<T>(_str);
+}
+
 inline bool float_equal(float const _a, float const _b)
 {
     constexpr float epsilon = 1e-6f; // Adjust as appropriate
