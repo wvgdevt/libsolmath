@@ -23,10 +23,10 @@ stype point_distance(const stype _x, const stype _y, const stype _x2, const styp
     return std::sqrt(dx * dx + dy * dy);
 }
 
-stype point_distance(Vector2f const& _x, Vector2f const& _y)
+stype point_distance(Vector2f const& _a, Vector2f const& _b)
 {
-    const stype dx = _y.x - _x.x;
-    const stype dy = _y.y - _x.y;
+    const stype dx = _b.x - _a.x;
+    const stype dy = _b.y - _a.y;
     return std::sqrt(dx * dx + dy * dy);
 }
 
@@ -38,11 +38,11 @@ bool point_distance(const stype _x, const stype _y, const stype _x2, const stype
     return false;
 }
 
-bool point_distance(Vector2f const& _x, Vector2f const& _y, float const _distance)
+bool point_distance(Vector2f const& _a, Vector2f const& _b, float const _distance)
 {
-    if (_x.x < _y.x + _distance && _x.x > _y.x - _distance &&
-        _x.y < _y.y + _distance && _y.y > _y.y - _distance)
-        return point_distance(_x, _y) < _distance;
+    if (_a.x < _b.x + _distance && _a.x > _b.x - _distance &&
+        _a.y < _b.y + _distance && _a.y > _b.y - _distance)
+        return point_distance(_a, _b) < _distance;
     return false;
 }
 
@@ -54,11 +54,11 @@ bool is_close(const stype _x, const stype _y, const stype _x2, const stype _y2, 
     return false;
 }
 
-bool is_close(Vector2f const& _x, Vector2f const& _y, const stype _r, const stype _distance)
+bool is_close(Vector2f const& _a, Vector2f const& _b, const stype _r, const stype _distance)
 {
-    if (_x.x < _y.x + _r && _x.x > _y.x - _r &&
-        _x.y < _y.y + _r && _x.y > _y.y - _r)
-        return point_distance(_x, _y) < _distance;
+    if (_a.x < _b.x + _r && _a.x > _b.x - _r &&
+        _a.y < _b.y + _r && _a.y > _b.y - _r)
+        return point_distance(_a, _b) < _distance;
     return false;
 }
 
@@ -99,7 +99,11 @@ stype angle_to_diff(const stype _angle, const stype _to) // NOLINT
     return 0;
 }
 
-stype rand(const stype _max) { return (static_cast<stype>(std::rand()) / RAND_MAX) * _max; }
+stype rand(stype const _max)
+{
+    thread_local std::mt19937 gen(std::random_device{}());
+    return std::uniform_real_distribution<stype>(0, _max)(gen);
+}
 
 stype rand(const stype _from, const stype _to)
 {
@@ -109,7 +113,7 @@ stype rand(const stype _from, const stype _to)
     return _to + rand(shift);
 }
 
-bool in_rect(math::Vector2f const& _point, math::FloatRect const& _rect)
+bool in_rect(Vector2f const& _point, FloatRect const& _rect)
 {
     if (_point.x >= _rect.x && _point.x <= _rect.x + _rect.width &&
         _point.y >= _rect.y && _point.y <= _rect.y + _rect.height)

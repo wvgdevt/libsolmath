@@ -56,7 +56,7 @@ stype abs(stype _x);
 stype normalize_angle(stype);
 stype angle_to_diff(stype, stype);
 
-stype rand(stype _max = 1);
+stype rand(stype _max = 1.0f);
 stype rand(stype _from, stype _to);
 
 std::string to_string(stype const _value, int const _precision);
