@@ -60,8 +60,8 @@ inline Vector2f operator/(Vector2f const& _lhs, float const& _rhs) { return Vect
 
 struct Vector2u // NOLINT
 {
-    Vector2u() : x(0), y(0) {}
-    Vector2u(const unsigned int _x, const unsigned int _y) : x(_x), y(_y) {}
+    constexpr Vector2u() : x(0), y(0) {}
+    constexpr Vector2u(const unsigned int _x, const unsigned int _y) : x(_x), y(_y) {}
     unsigned int x;
     unsigned int y;
 };
