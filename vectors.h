@@ -6,6 +6,7 @@ struct Vector2f // NOLINT
 {
 public:
     Vector2f() : x(0), y(0) {}
+    explicit constexpr Vector2f(std::tuple<float, float> const& _xy) : x(std::get<0>(_xy)), y(std::get<1>(_xy)) {}
     constexpr Vector2f(const float _x, const float _y) : x(_x), y(_y) {}
 
     static Vector2f const& zero_vector()

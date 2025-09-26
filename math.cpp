@@ -99,12 +99,6 @@ stype angle_to_diff(const stype _angle, const stype _to) // NOLINT
     return 0;
 }
 
-stype rand(stype const _max)
-{
-    thread_local std::mt19937 gen(std::random_device{}());
-    return std::uniform_real_distribution<stype>(0, _max)(gen);
-}
-
 stype rand(const stype _from, const stype _to)
 {
     const stype shift = abs(_to - _from);

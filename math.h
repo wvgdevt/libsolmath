@@ -6,6 +6,7 @@
 #include <random>
 
 // tools includes
+#include <ranges>
 #include <libsolmath/tools/average.h>
 #include <libsolmath/tools/slock.h>
 #include <libsolmath/tools/svector.h>
@@ -40,6 +41,7 @@ using stype             = float;
 #endif
 
 constexpr stype pi() { return M_PI; }
+constexpr stype two_pi() { return M_PI * 2.f; }
 constexpr stype e() { return M_E; }
 stype point_direction(Vector2f const&, Vector2f const&);
 stype point_distance(Vector2f const&, Vector2f const&);
@@ -56,9 +58,26 @@ stype abs(stype _x);
 stype normalize_angle(stype);
 stype angle_to_diff(stype, stype);
 
-stype rand(stype _max = 1.0f);
-stype rand(stype _from, stype _to);
+template<class T>
+T rand(T const _max = 1.0f)
+{
+    thread_local static std::mt19937 gen{std::random_device{}()};
+    if constexpr (std::is_floating_point_v<T>)
+    {
+        std::uniform_real_distribution<T> dist(0, _max);
+        return dist(gen);
+    }
+    else if constexpr (std::is_integral_v<T>)
+    {
+        std::uniform_int_distribution<T> dist(0, _max);
+        return dist(gen);
+    }
+    else
+        static_assert(std::is_arithmetic_v<T>, "T must be arithmetic");
+    return 0;
+}
 
+stype rand(stype _from, stype _to);
 std::string to_string(stype const _value, int const _precision);
 
 bool is_close(Vector2f const&, Vector2f const&, float _r = 50, float _distance = 5);
@@ -72,6 +91,22 @@ T const& random_element(std::vector<T> const& _options)
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<size_t> dist(0, _options.size() - 1);
     return _options[dist(gen)];
+}
+
+template<std::ranges::range R>
+auto const& random_element(const R& _r)
+{
+    if (std::ranges::empty(_r))
+    {
+        throw std::runtime_error("empty range");
+    }
+
+    static thread_local std::mt19937 gen{std::random_device{}()};
+    std::uniform_int_distribution<std::size_t> dist(0, std::ranges::size(_r) - 1);
+
+    auto it = std::ranges::begin(_r);
+    std::ranges::advance(it, dist(gen));
+    return *it;
 }
 
 template<class T>
