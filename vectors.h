@@ -4,7 +4,6 @@
 namespace sol::math {
 struct Vector2f // NOLINT
 {
-public:
     Vector2f() : x(0), y(0) {}
     explicit constexpr Vector2f(std::tuple<float, float> const& _xy) : x(std::get<0>(_xy)), y(std::get<1>(_xy)) {}
     constexpr Vector2f(const float _x, const float _y) : x(_x), y(_y) {}
@@ -46,25 +45,20 @@ public:
     float y;
 };
 
-inline Vector2f operator+(Vector2f const& _lhs, Vector2f const& _rhs)
-{
-    return Vector2f(_lhs.x + _rhs.x, _lhs.y + _rhs.y);
-}
-
-inline Vector2f operator-(Vector2f const& _lhs, Vector2f const& _rhs)
-{
-    return Vector2f(_lhs.x - _rhs.x, _lhs.y - _rhs.y);
-}
-
-inline Vector2f operator*(Vector2f const& _lhs, float const& _rhs) { return Vector2f(_lhs.x * _rhs, _lhs.y * _rhs); }
-inline Vector2f operator/(Vector2f const& _lhs, float const& _rhs) { return Vector2f(_lhs.x / _rhs, _lhs.y / _rhs); }
-
 struct Vector2u // NOLINT
 {
     constexpr Vector2u() : x(0), y(0) {}
     constexpr Vector2u(const unsigned int _x, const unsigned int _y) : x(_x), y(_y) {}
     unsigned int x;
     unsigned int y;
+};
+
+struct Vector2i // NOLINT
+{
+    constexpr Vector2i() : x(0), y(0) {}
+    constexpr Vector2i(const int _x, const int _y) : x(_x), y(_y) {}
+    int x;
+    int y;
 };
 
 struct FloatRect {
@@ -79,4 +73,22 @@ struct FloatRect {
     float width;
     float height;
 };
+
+template<class T>
+concept vec2_only = std::same_as<T, Vector2f> || std::same_as<T, Vector2i>;
+
+template<vec2_only T>
+constexpr T operator-(T const& _lhs, T const& _rhs) noexcept
+{
+    return {_lhs.x - _rhs.x, _lhs.y - _rhs.y};
+}
+
+template<vec2_only T>
+constexpr T operator+(T const& _lhs, T const& _rhs)
+{
+    return {_lhs.x + _rhs.x, _lhs.y + _rhs.y};
+}
+
+inline Vector2f operator*(Vector2f const& _lhs, float const& _rhs) { return Vector2f(_lhs.x * _rhs, _lhs.y * _rhs); }
+inline Vector2f operator/(Vector2f const& _lhs, float const& _rhs) { return Vector2f(_lhs.x / _rhs, _lhs.y / _rhs); }
 }
