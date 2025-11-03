@@ -31,6 +31,12 @@ struct Vector2f // NOLINT
         y += _rhs.y;
     }
 
+    void operator-=(Vector2f const& _rhs)
+    {
+        x -= _rhs.x;
+        y -= _rhs.y;
+    }
+
     void operator*=(float const& _rhs)
     {
         x *= _rhs;
@@ -62,12 +68,6 @@ struct Vector2i // NOLINT
 };
 
 struct FloatRect {
-    explicit FloatRect(Vector2f const _wh = {100, 100})
-        : x(0), y(0), width(_wh.x), height(_wh.y) {}
-
-    explicit FloatRect(Vector2f const _xy, Vector2f const _wh = {100, 100})
-        : x(_xy.x), y(_xy.y), width(_wh.x), height(_wh.y) {}
-
     float x;
     float y;
     float width;
