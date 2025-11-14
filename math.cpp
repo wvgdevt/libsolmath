@@ -16,14 +16,14 @@ stype point_direction(const stype _x, const stype _y, const stype _x2, const sty
 
 stype point_direction(Vector2f const& _x, Vector2f const& _y) { return std::atan2(-_y.x + _x.x, _y.y - _x.y); }
 
-stype point_distance(const stype _x, const stype _y, const stype _x2, const stype _y2)
+stype point_distance_heavy(const stype _x, const stype _y, const stype _x2, const stype _y2)
 {
     const stype dx = _x2 - _x;
     const stype dy = _y2 - _y;
     return std::sqrt(dx * dx + dy * dy);
 }
 
-stype point_distance(Vector2f const& _a, Vector2f const& _b)
+stype point_distance_heavy(Vector2f const& _a, Vector2f const& _b)
 {
     const stype dx = _b.x - _a.x;
     const stype dy = _b.y - _a.y;
@@ -34,7 +34,7 @@ bool point_distance(const stype _x, const stype _y, const stype _x2, const stype
 {
     if (_x < _x2 + _distance && _x > _x2 - _distance &&
         _y < _y2 + _distance && _y > _y2 - _distance)
-        return point_distance(_x, _y, _x2, _y2) < _distance;
+        return point_distance_heavy(_x, _y, _x2, _y2) < _distance;
     return false;
 }
 
@@ -42,7 +42,7 @@ bool point_distance(Vector2f const& _a, Vector2f const& _b, float const _distanc
 {
     if (_a.x < _b.x + _distance && _a.x > _b.x - _distance &&
         _a.y < _b.y + _distance && _a.y > _b.y - _distance)
-        return point_distance(_a, _b) < _distance;
+        return point_distance_heavy(_a, _b) < _distance;
     return false;
 }
 
@@ -50,7 +50,7 @@ bool is_close(const stype _x, const stype _y, const stype _x2, const stype _y2, 
 {
     if (_x < _x2 + _r && _x > _x2 - _r &&
         _y < _y2 + _r && _y > _y2 - _r)
-        return point_distance(_x, _y, _x2, _y2) < _distance;
+        return point_distance_heavy(_x, _y, _x2, _y2) < _distance;
     return false;
 }
 
@@ -58,7 +58,7 @@ bool is_close(Vector2f const& _a, Vector2f const& _b, const stype _r, const styp
 {
     if (_a.x < _b.x + _r && _a.x > _b.x - _r &&
         _a.y < _b.y + _r && _a.y > _b.y - _r)
-        return point_distance(_a, _b) < _distance;
+        return point_distance_heavy(_a, _b) < _distance;
     return false;
 }
 
@@ -70,6 +70,11 @@ stype sin(const stype _x) { return std::sin(_x); }
 stype degtorad(const stype _deg) // NOLINT
 {
     return _deg * PI / static_cast<stype>(180.0);
+}
+
+stype radtodeg(const stype _rad) // NOLINT
+{
+    return _rad * static_cast<stype>(180.0) / PI;
 }
 
 stype normalize_angle(stype _angle) // NOLINT

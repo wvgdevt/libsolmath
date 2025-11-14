@@ -44,12 +44,13 @@ constexpr stype pi() { return M_PI; }
 constexpr stype two_pi() { return M_PI * 2.f; }
 constexpr stype e() { return M_E; }
 stype point_direction(Vector2f const&, Vector2f const&);
-stype point_distance(Vector2f const&, Vector2f const&);
+stype point_distance_heavy(Vector2f const&, Vector2f const&);
 bool point_distance(Vector2f const&, Vector2f const&, float);
 
 stype cos(stype);
 stype sin(stype);
 stype degtorad(stype); // NOLINT
+stype radtodeg(stype); // NOLINT
 stype pow(stype, stype);
 bool are_almost_equal(stype _a, stype _b);
 Vector2f abs(Vector2f const& _x);
