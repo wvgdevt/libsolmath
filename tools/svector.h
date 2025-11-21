@@ -33,13 +33,13 @@ public:
 
     void null_element(K const& _key)
     {
-        assert(m_index_map.count(_key));
+        assert(m_index_map.contains(_key));
         std::get<1>(m_vector.at(m_index_map.at(_key))) = nullptr;
     }
 
     void erase(K const& _key, bool const _sanity_check = true)
     {
-        assert(m_index_map.count(_key));
+        assert(m_index_map.contains(_key));
         if (_sanity_check)
             assert(std::get<1>(m_vector.at(m_index_map.at(_key)))->getKey() == _key);
         _remove(_key);
