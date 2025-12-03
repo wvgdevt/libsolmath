@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstddef>
 #include <iostream>
+#include <cassert>
 
 namespace sol::math {
 template<class K, class T>

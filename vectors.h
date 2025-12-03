@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <tuple>
 
 namespace sol::math {
 struct Vector2f // NOLINT
