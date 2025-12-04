@@ -9,7 +9,7 @@ struct exception : virtual std::exception                                       
     exception(exception&&) noexcept = default;                                       \
     exception(const exception&) noexcept = delete;                                   \
                                                                                      \
-    exception(std::string    _message = std::string(),                               \
+    explicit exception(std::string _message = std::string(),                         \
               std::source_location _l = std::source_location::current()) noexcept    \
         : m_message(std::move(_message)), m_location(_l) {}                          \
                                                                                      \
