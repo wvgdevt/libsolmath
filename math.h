@@ -2,22 +2,23 @@
 #include <vector>
 #include <cmath>
 #include <cassert>
-#include <libsolmath/vectors.h>
+#include <ranges>
 #include <random>
+#include <magic_enum/magic_enum.hpp>
+
+#include "libsolmath/vectors.h"
 
 // tools includes
-#include <ranges>
-#include <libsolmath/tools/average.h>
-#include <libsolmath/tools/slock.h>
-#include <libsolmath/tools/svector.h>
-#include <libsolmath/tools/timer.h>
-#include <libsolmath/tools/threadpool.h>
-#include <libsolmath/tools/sangle.h>
-#include <libsolmath/tools/svector.h>
-#include <libsolmath/tools/logger.h>
-#include <libsolmath/tools/exception.h>
-#include <libsolmath/tools/sbuffer.h>
-#include <magic_enum/magic_enum.hpp>
+#include "libsolmath/tools/average.h"
+#include "libsolmath/tools/slock.h"
+#include "libsolmath/tools/svector.h"
+#include "libsolmath/tools/timer.h"
+#include "libsolmath/tools/threadpool.h"
+#include "libsolmath/tools/sangle.h"
+#include "libsolmath/tools/svector.h"
+#include "libsolmath/tools/logger.h"
+#include "libsolmath/tools/exception.h"
+#include "libsolmath/tools/sbuffer.h"
 
 namespace sol {
 template<class T, class... Args>
