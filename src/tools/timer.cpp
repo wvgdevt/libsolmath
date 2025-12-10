@@ -1,4 +1,4 @@
-#include "timer.h"
+#include "libsolmath/tools/timer.h"
 
 namespace sol::math {
 timer::timer() { m_start = std::chrono::high_resolution_clock::now(); }

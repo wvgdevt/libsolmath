@@ -6,19 +6,17 @@
 #include <random>
 #include <magic_enum/magic_enum.hpp>
 
-#include "libsolmath/vectors.h"
-
-// tools includes
-#include "libsolmath/tools/average.h"
-#include "libsolmath/tools/slock.h"
-#include "libsolmath/tools/svector.h"
-#include "libsolmath/tools/timer.h"
-#include "libsolmath/tools/threadpool.h"
-#include "libsolmath/tools/sangle.h"
-#include "libsolmath/tools/svector.h"
-#include "libsolmath/tools/logger.h"
-#include "libsolmath/tools/exception.h"
-#include "libsolmath/tools/sbuffer.h"
+#include "vectors.h"           // NOLINT
+#include "tools/average.h"     // NOLINT
+#include "tools/slock.h"       // NOLINT
+#include "tools/svector.h"     // NOLINT
+#include "tools/timer.h"       // NOLINT
+#include "tools/threadpool.h"  // NOLINT
+#include "tools/sangle.h"      // NOLINT
+#include "tools/svector.h"     // NOLINT
+#include "tools/logger.h"      // NOLINT
+#include "tools/exception.h"   // NOLINT
+#include "tools/sbuffer.h"     // NOLINT
 
 namespace sol {
 template<class T, class... Args>

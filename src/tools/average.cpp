@@ -1,10 +1,8 @@
-#include "average.h"
+#include "libsolmath/tools/average.h"
 #include <numeric>
 
-namespace sol::math
-{
-
-template <class T>
+namespace sol::math {
+template<class T>
 average<T>& average<T>::operator=(T _value)
 {
     m_history.push_back(_value);
@@ -13,7 +11,7 @@ average<T>& average<T>::operator=(T _value)
     return *this;
 }
 
-template <class T>
+template<class T>
 T average<T>::avg() const
 {
     if (m_history.empty())
@@ -22,7 +20,7 @@ T average<T>::avg() const
     return sum / m_history.size();
 }
 
-template <class T>
+template<class T>
 T average<T>::val() const
 {
     if (m_history.empty())
@@ -30,7 +28,7 @@ T average<T>::val() const
     return m_history.back();
 }
 
-template <class T>
+template<class T>
 size_t average<T>::logs_count() const
 {
     return m_history.size();
@@ -40,5 +38,4 @@ size_t average<T>::logs_count() const
 template class average<int>;
 template class average<float>;
 template class average<double>;
-
 }
