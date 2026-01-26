@@ -11,14 +11,14 @@ namespace dc::internal {
         virtual ~DebugChannel() = default;
 
         std::size_t to_sizet() const { return m_num; } // NOLINT
-        virtual std::string const& to_string() const = 0;
+        [[nodiscard]] virtual std::string const& to_string() const = 0;
 
     protected:
         DebugChannel();
 
     private:
-        DebugChannel(const DebugChannel&)            = delete;
-        DebugChannel& operator=(const DebugChannel&) = delete;
+        DebugChannel(const DebugChannel&)            = delete; // NOLINT
+        DebugChannel& operator=(const DebugChannel&) = delete; // NOLINT
         static size_t num;
         size_t m_num;
     };
@@ -54,10 +54,31 @@ private:
     log_topic m_console_filter_topic;
 
 private:
-    logger() {};
-    ~logger() {}
-    logger(const logger&)            = delete;
-    logger& operator=(const logger&) = delete;
+    logger()                         = default;
+    ~logger()                        = default;
+    logger(const logger&)            = delete; // NOLINT
+    logger& operator=(const logger&) = delete; // NOLINT
+};
+
+#if NDEBUG
+#define DEBUG_ONLY(code) ((void)0)
+#else
+#define DEBUG_ONLY(code) do { code; } while(0)
+#endif
+
+class tracer {
+public:
+    static tracer& get();
+    static void write(size_t _level, std::string const&);
+    static std::string const& log();
+    static void flush();
+
+private:
+    [[nodiscard]] std::string const& _log() const;
+    void _write(std::string const&);
+    void _flush() { m_log = ""; }
+    tracer() {}; // NOLINT
+    std::string m_log;
 };
 
 #define DEFINE_LOG_CHANNEL(CHANNEL_NAME, CHANNEL_STR)                                           \

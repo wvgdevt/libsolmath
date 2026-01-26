@@ -1,7 +1,8 @@
 #pragma once
+#include <format>
+#include <string>
 #include <exception>
 #include <source_location>
-#include <string>
 
 #define DEFINE_EXCEPTION()                                                           \
 struct exception : virtual std::exception                                            \
@@ -14,7 +15,16 @@ struct exception : virtual std::exception                                       
         : m_message(std::move(_message)), m_location(_l) {}                          \
                                                                                      \
     const char* what() const noexcept override {                                     \
-        return m_message.empty() ? std::exception::what() : m_message.c_str();       \
+        if (m_message.empty())                                                       \
+            return std::exception::what();                                           \
+        m_what_cache = std::format(                                                  \
+                    "{}:{} [{}]\n{}",                                                \
+                    m_location.file_name(),                                          \
+                    m_location.line(),                                               \
+                    m_location.function_name(),                                      \
+                    m_message                                                        \
+                );                                                                   \
+        return m_what_cache.c_str();                                                 \
     }                                                                                \
                                                                                      \
     const std::source_location& location() const noexcept { return m_location; }     \
@@ -22,6 +32,7 @@ struct exception : virtual std::exception                                       
 protected:                                                                           \
     std::string m_message;                                                           \
     std::source_location m_location;                                                 \
+    mutable std::string m_what_cache;                                                \
 };
 
 #define DEFINE_EXCEPTION_OPERATOR(EXCEPTION)                                         \
@@ -30,3 +41,6 @@ protected:                                                                      
         m_message += _what;                                                          \
         return *this;                                                                \
     }
+
+#define ASSERT(EXCEPTION, MSG)  \
+    throw (EXCEPTION((MSG)));
