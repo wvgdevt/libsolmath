@@ -1,10 +1,6 @@
 /* BEGIN_LICENSE
  * SPDX-License-Identifier: MIT
- * Copyright (c) 2026 winsvega
+ * Copyright (c) @YEAR@ @OWNER@
  *
  * Full license text is in the repository root LICENSE file.
  * END_LICENSE */
-
-#include "libsolmath/tools/svector.h"
-
-namespace sol::math {}
