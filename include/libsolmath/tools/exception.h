@@ -42,5 +42,16 @@ protected:                                                                      
         return *this;                                                                \
     }
 
-#define ASSERT(EXCEPTION, MSG)  \
+#ifdef NDEBUG
+#define ASSERT(COND, EXCEPTION, MSG) do { } while (0)
+#else
+#define ASSERT(COND, EXCEPTION, MSG)                          \
+do {                                                          \
+    if (!(COND)) {                                            \
+        throw (EXCEPTION((MSG)));                             \
+    }                                                         \
+} while (0)
+#endif
+
+#define THROW(EXCEPTION, MSG)  \
     throw (EXCEPTION((MSG)));

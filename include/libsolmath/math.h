@@ -78,7 +78,7 @@ T rand(T const _max = 1.0f)
 }
 
 stype rand(stype _from, stype _to);
-std::string to_string(stype const _value, int const _precision);
+std::string to_string(stype _value, int _precision);
 
 bool is_close(Vector2f const&, Vector2f const&, float _r = 50, float _distance = 5);
 bool in_rect(Vector2f const& _point, FloatRect const& _rect);
