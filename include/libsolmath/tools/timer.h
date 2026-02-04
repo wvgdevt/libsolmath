@@ -14,8 +14,8 @@ class timer // NOLINT
 public:
     timer();
     void reset();
-    float passed_milliseconds() const;
-    double passed_precise() const;
+    [[nodiscard]] float passed_milliseconds() const;
+    [[nodiscard]] double passed_precise() const;
 
 private:
     std::chrono::high_resolution_clock::time_point m_start;
