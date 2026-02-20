@@ -6,7 +6,7 @@
  * END_LICENSE */
 
 #pragma once
-#include <format>
+#include <libsolmath/tools/format.h>
 #include <string>
 #include <exception>
 #include <source_location>
@@ -24,7 +24,7 @@ struct exception : virtual std::exception                                       
     const char* what() const noexcept override {                                     \
         if (m_message.empty())                                                       \
             return std::exception::what();                                           \
-        m_what_cache = std::format(                                                  \
+        m_what_cache = math::format(                                                  \
                     "{}:{} [{}]\n{}",                                                \
                     m_location.file_name(),                                          \
                     m_location.line(),                                               \
