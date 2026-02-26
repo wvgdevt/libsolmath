@@ -134,6 +134,32 @@ std::string to_string(stype const _value, int const _precision)
     return out.str();
 }
 
+std::string current_date()
+{
+    auto const now      = std::chrono::system_clock::now();
+    std::time_t const t = std::chrono::system_clock::to_time_t(now);
+
+    std::tm tm{};
+    localtime_r(&t, &tm);
+
+    std::ostringstream ss;
+    ss << std::put_time(&tm, "%Y-%m-%d");
+    return ss.str();
+}
+
+std::string current_datetime()
+{
+    auto const now      = std::chrono::system_clock::now();
+    std::time_t const t = std::chrono::system_clock::to_time_t(now);
+
+    std::tm tm{};
+    localtime_r(&t, &tm);
+
+    std::ostringstream ss;
+    ss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+    return ss.str();
+}
+
 /*template<class T>
 T rand(T _max)
 {

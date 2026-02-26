@@ -49,16 +49,35 @@ protected:                                                                      
         return *this;                                                                \
     }
 
+template<typename... Args>
+std::string format_variadic(Args&&... _args)
+{
+    std::ostringstream ss;
+    (ss << ... << std::forward<Args>(_args));
+    return ss.str();
+}
+
 #ifdef NDEBUG
-#define ASSERT(COND, EXCEPTION, MSG) do { } while (0)
+#define ASSERT(COND, EXCEPTION, ...) do { } while (0)
 #else
-#define ASSERT(COND, EXCEPTION, MSG)                          \
+#define ASSERT(COND, EXCEPTION, ...)                          \
 do {                                                          \
     if (!(COND)) {                                            \
-        throw (EXCEPTION((MSG)));                             \
+        throw (EXCEPTION(format_variadic(__VA_ARGS__)));      \
     }                                                         \
 } while (0)
 #endif
 
+#define VERIFY(COND, EXCEPTION, ...)                          \
+do {                                                          \
+    if (!(COND)) {                                            \
+        throw (EXCEPTION(format_variadic(__VA_ARGS__)));      \
+    }                                                         \
+} while (0)
+
 #define THROW(EXCEPTION, MSG)  \
     throw (EXCEPTION((MSG)));
+
+namespace sol::math {
+DEFINE_EXCEPTION();
+}

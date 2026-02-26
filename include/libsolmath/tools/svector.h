@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <iostream>
 #include <cassert>
+#include "exception.h"
 
 namespace sol::math {
 template<class K, class T>
@@ -29,27 +30,28 @@ public:
 
     void push_back(T _x)
     {
-        assert(!m_index_map.count(_x->getKey()));
+        ASSERT(!m_index_map.count(_x->getKey()), math::exception, "Key already exists in svector_fix!");
         m_index_map.emplace(_x->getKey(), m_vector.size());
         m_vector.emplace_back(_x->getKey(), std::move(_x));
     }
 
     std::vector<std::tuple<K, T> > const& vector() const { return m_vector; }
-    size_t size() const { return m_vector.size(); }
+    [[nodiscard]] size_t size() const { return m_vector.size(); }
     const_iterator find(K const& _key) const { return m_index_map.find(_key); }
     const_iterator end() const { return m_index_map.end(); }
 
     void null_element(K const& _key)
     {
-        assert(m_index_map.contains(_key));
+        ASSERT(m_index_map.contains(_key), math::exception, "Key not found in svector_fix!");
         std::get<1>(m_vector.at(m_index_map.at(_key))) = nullptr;
     }
 
     void erase(K const& _key, bool const _sanity_check = true)
     {
-        assert(m_index_map.contains(_key));
+        ASSERT(m_index_map.contains(_key), math::exception, "Key not found in svector_fix!");
         if (_sanity_check)
-            assert(std::get<1>(m_vector.at(m_index_map.at(_key)))->getKey() == _key);
+            ASSERT(std::get<1>(m_vector.at(m_index_map.at(_key)))->getKey() == _key, math::exception,
+               "Key does not match in sanity check!");
         _remove(_key);
     }
 
@@ -108,8 +110,8 @@ private:
             auto const& key = std::get<0>(m_vector.at(i));
             auto& el        = std::get<1>(m_vector.at(i));
             if (el != nullptr)
-                assert(key == el->getKey());
-            assert(m_index_map.at(key) == i);
+                ASSERT(key == el->getKey(), math::exception, "Element key does not match!");
+            ASSERT(m_index_map.at(key) == i, math::exception, "Index map does not match!");
         }
     }
 
@@ -127,7 +129,7 @@ public:
 
     T& at(size_t _i) { return m_vector.at(_i); }
     T& at(K const& _key) { return m_vector.at(m_index_map.at(_key)); }
-    size_t size() const { return m_vector.size(); }
+    [[nodiscard]] size_t size() const { return m_vector.size(); }
     //bool count(K const& _key) const { return m_index_map.count(_key); }
     const_iterator find(K const& _key) const { return m_index_map.find(_key); }
     const_iterator end() const { return m_index_map.end(); }

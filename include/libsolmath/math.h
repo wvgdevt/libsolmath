@@ -40,10 +40,10 @@ constexpr float TWO_PI  = 2.0 * M_PI;
 constexpr float PI      = M_PI;
 using stype             = float;
 #elif defined(SOLMATH_PRECISION) && SOLMATH_PRECISION == double
-    constexpr double EPSILON = 1e-9;
-    constexpr double TWO_PI = 2.0 * M_PI;
-    constexpr double PI = M_PI;
-    using PrecisionType = double;
+constexpr double EPSILON = 1e-9;
+constexpr double TWO_PI  = 2.0 * M_PI;
+constexpr double PI      = M_PI;
+using PrecisionType      = double;
 #endif
 
 constexpr stype pi() { return M_PI; }
@@ -93,7 +93,7 @@ bool in_rect(Vector2f const& _point, FloatRect const& _rect);
 template<class T>
 T const& random_element(std::vector<T> const& _options)
 {
-    assert(_options.size() != 0);
+    ASSERT(_options.size() != 0, math::exception, "empty vector!");
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<size_t> dist(0, _options.size() - 1);
@@ -103,10 +103,7 @@ T const& random_element(std::vector<T> const& _options)
 template<std::ranges::range R>
 auto const& random_element(const R& _r)
 {
-    if (std::ranges::empty(_r))
-    {
-        throw std::runtime_error("empty range");
-    }
+    VERIFY(!std::ranges::empty(_r), math::exception, "empty range!");
 
     static thread_local std::mt19937 gen{std::random_device{}()};
     std::uniform_int_distribution<std::size_t> dist(0, std::ranges::size(_r) - 1);
@@ -133,4 +130,7 @@ inline bool float_equal(float const _a, float const _b)
     constexpr float epsilon = 1e-6f; // Adjust as appropriate
     return std::abs(_a - _b) < epsilon;
 }
+
+std::string current_date();
+std::string current_datetime();
 }
