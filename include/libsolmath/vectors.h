@@ -22,16 +22,16 @@ struct Vector2f // NOLINT
         return zero_vector;
     }
 
-    Vector2f normalized() const
+    [[nodiscard]] Vector2f normalized() const
     {
         float const magnitude = std::sqrt(x * x + y * y); // NOLINT
         if (magnitude != 0)
-            return Vector2f(x / magnitude, y / magnitude);
-        return Vector2f(0, 0);
+            return {x / magnitude, y / magnitude};
+        return {0, 0};
     }
 
-    float length() const { return std::sqrt(x * x + y * y); }
-    bool is_zero() const { return abs(x) < 0.001 && abs(y) < 0.001; }
+    [[nodiscard]] float length() const { return std::sqrt(x * x + y * y); }
+    [[nodiscard]] bool is_zero() const { return std::fabs(x) < 0.001 && std::fabs(y) < 0.001; }
 
     void operator+=(Vector2f const& _rhs)
     {
@@ -97,7 +97,7 @@ constexpr T operator+(T const& _lhs, T const& _rhs)
     return {_lhs.x + _rhs.x, _lhs.y + _rhs.y};
 }
 
-inline Vector2f operator*(Vector2f const& _lhs, float const& _rhs) { return Vector2f(_lhs.x * _rhs, _lhs.y * _rhs); }
-inline Vector2f operator/(Vector2f const& _lhs, float const& _rhs) { return Vector2f(_lhs.x / _rhs, _lhs.y / _rhs); }
-inline Vector2f operator/(Vector2i const& _lhs, float const& _rhs) { return Vector2f(_lhs.x / _rhs, _lhs.y / _rhs); }
+inline Vector2f operator*(Vector2f const& _lhs, float const& _rhs) { return {_lhs.x * _rhs, _lhs.y * _rhs}; }
+inline Vector2f operator/(Vector2f const& _lhs, float const& _rhs) { return {_lhs.x / _rhs, _lhs.y / _rhs}; }
+inline Vector2f operator/(Vector2i const& _lhs, float const& _rhs) { return {_lhs.x / _rhs, _lhs.y / _rhs}; }
 }
