@@ -131,6 +131,12 @@ inline bool float_equal(float const _a, float const _b)
     return std::abs(_a - _b) < epsilon;
 }
 
+inline bool float_equal(Vector2f const& _a, Vector2f const& _b)
+{
+    constexpr float epsilon = 1e-6f; // Adjust as appropriate
+    return std::abs(_a.x - _b.x) < epsilon && std::abs(_a.y - _b.y) < epsilon;
+}
+
 std::string current_date();
 std::string current_datetime();
 }
