@@ -16,7 +16,6 @@ namespace {
 struct LevelData {
     float total_time{};
     float last_time{};
-    float first_record_time{};
     std::string padding;
 };
 
@@ -100,47 +99,55 @@ std::tuple<std::string, std::string> color_by_time(float const _time)
 void tracer::write(size_t const _level, std::string const& _message)
 {
     static size_t current_level = 0;
-    auto& data                  = g_level_time[_level];
-    if (data.padding.empty())
+    static bool has_current     = false;
+
+    float const now = g_time.passed_milliseconds();
+
+    if (has_current)
     {
-        data.padding           = std::string((_level + 1) * 2, '.');
-        data.last_time         = g_time.passed_milliseconds();
-        data.first_record_time = g_time.passed_milliseconds();
-        if (_level < current_level)
+        if (_level > current_level)
         {
-            auto& previous_data    = g_level_time[current_level];
-            data.first_record_time = previous_data.first_record_time;
+            auto previous = g_level_time.find(current_level);
+            if (previous != g_level_time.end())
+                previous->second.total_time += now - previous->second.last_time;
+        }
+        else if (_level < current_level)
+        {
+            for (size_t level = current_level; level > _level; --level)
+            {
+                auto previous = g_level_time.find(level);
+                if (previous == g_level_time.end())
+                    continue;
+
+                previous->second.total_time += now - previous->second.last_time;
+                auto const color = color_by_time(previous->second.total_time);
+                get()._write(
+                    previous->second.padding
+                    + std::get<0>(color) + "[" + to_string(previous->second.total_time, 2) + "] total time"
+                    + std::get<1>(color));
+                g_level_time.erase(previous);
+            }
         }
     }
 
-    if (_level < current_level)
+    auto [it, inserted] = g_level_time.try_emplace(_level);
+    auto& data          = it->second;
+    if (inserted)
     {
-        auto& previous_data = g_level_time[current_level];
-        data.last_time      = previous_data.first_record_time;
+        data.padding    = std::string((_level + 1) * 2, '.');
+        data.last_time  = now;
+        data.total_time = 0;
     }
 
-    if (_level != current_level)
-    {
-        auto& previous_data = g_level_time[current_level];
-        previous_data.total_time += g_time.passed_milliseconds() - previous_data.last_time;
-
-        if (_level < current_level)
-        {
-            auto const color = color_by_time(previous_data.total_time);
-            get()._write(
-                previous_data.padding
-                + std::get<0>(color) + "[" + to_string(previous_data.total_time, 2) + "] " + "total time" +
-                std::get<1>(color));
-        }
-        current_level = _level;
-    }
-
-    float const time_diff = std::max(0.00f, g_time.passed_milliseconds() - data.last_time);
+    float const time_diff = std::max(0.00f, now - data.last_time);
     auto const color      = color_by_time(time_diff);
     get()._write(
         data.padding + std::get<0>(color) + "[" + to_string(time_diff, 2) + "] " + _message + std::get<1>(color));
-    data.last_time = g_time.passed_milliseconds();
+    data.last_time = now;
     data.total_time += time_diff;
+
+    current_level = _level;
+    has_current   = true;
 }
 
 std::string const& tracer::log()
