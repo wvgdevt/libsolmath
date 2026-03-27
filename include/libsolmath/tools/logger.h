@@ -32,7 +32,7 @@ namespace dc::internal {
 }
 
 struct log_topic {
-    unsigned long id = 0;
+    int id = 0;
 };
 
 ///
