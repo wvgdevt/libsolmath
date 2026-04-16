@@ -35,6 +35,15 @@ public:
         m_vector.emplace_back(_x->getKey(), std::move(_x));
     }
 
+    void emplace_back(K const& _key, T const& _x)
+    {
+        ASSERT(!m_index_map.count(_key), math::exception, "Key already exists in svector_fix!");
+        m_index_map.emplace(_key, m_vector.size());
+        m_vector.emplace_back(_key, std::move(_x));
+    }
+
+    bool contains(K const& _key) const { return m_index_map.contains(_key); }
+
     std::vector<std::tuple<K, T> > const& vector() const { return m_vector; }
     [[nodiscard]] size_t size() const { return m_vector.size(); }
     const_iterator find(K const& _key) const { return m_index_map.find(_key); }
@@ -63,20 +72,6 @@ public:
 private:
     void _remove(K const& _key)
     {
-        /*std::cerr << "REMOVE " << _key << std::endl;
-        for (auto const& [id, index]: m_index_map)
-            std::cerr << "id: " << id << " index: " << index << " ";
-        std::cerr << std::endl;
-        for (auto const& [id, el]: m_vector)
-        {
-            if (el == nullptr)
-                std::cerr << "id: " << id << " vid: " << "null" << " ";
-            else
-                std::cerr << "id: " << id << " vid: " << el->getKey() << " ";
-        }
-        std::cerr << std::endl;
-        */
-
         size_t const delete_pos = m_index_map.at(_key);
         size_t last_ind         = m_vector.size() - 1;
 
@@ -88,22 +83,7 @@ private:
             std::swap(m_vector.at(last_ind), m_vector.at(delete_pos));
         }
 
-        //m_vector.resize(last_ind);
         m_vector.pop_back();
-
-        // DEBUG
-        /*std::cerr << "REMOVE AFTER" << std::endl;
-        for (auto const& [id, index]: m_index_map)
-            std::cerr << "id: " << id << " index: " << index << " ";
-        std::cerr << std::endl;
-        for (auto const& [id, el]: m_vector)
-        {
-            if (el == nullptr)
-                std::cerr << "id: " << id << " vid: " << " null" << " ";
-            else
-                std::cerr << "id: " << id << " vid: " << el->getKey() << " ";
-        }
-        std::cerr << std::endl;*/
 
         for (size_t i = 0; i < m_vector.size(); ++i)
         {
