@@ -67,6 +67,14 @@ struct Vector2u // NOLINT
     unsigned int y;
 };
 
+struct Vector2st // NOLINT
+{
+    constexpr Vector2st() : x(0), y(0) {}
+    constexpr Vector2st(const size_t _x, const size_t _y) : x(_x), y(_y) {}
+    size_t x;
+    size_t y;
+};
+
 struct Vector2i // NOLINT
 {
     constexpr Vector2i() : x(0), y(0) {}
