@@ -8,6 +8,7 @@
 #include "include/libsolmath/math.h" // NOLINT
 #include <sstream>
 #include <iomanip>
+#include <numbers>
 
 using namespace sol::math;
 
@@ -158,6 +159,15 @@ std::string current_datetime()
     std::ostringstream ss;
     ss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
     return ss.str();
+}
+
+float random_angle()
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    std::uniform_real_distribution<float> angle_dist(0.f, 2.f * std::numbers::pi_v<float>);
+    return angle_dist(gen);
 }
 
 /*template<class T>
