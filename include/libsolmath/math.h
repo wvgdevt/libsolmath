@@ -113,6 +113,15 @@ auto const& random_element(const R& _r)
     return *it;
 }
 
+inline float random_angle()
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    std::uniform_real_distribution<float> angle_dist(0.f, 2.f * std::numbers::pi_v<float>);
+    return angle_dist(gen);
+}
+
 template<class T>
 std::string enum_to_string(T _enum)
 {
