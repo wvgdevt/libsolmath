@@ -24,6 +24,7 @@
 #include "tools/logger.h"      // NOLINT
 #include "tools/exception.h"   // NOLINT
 #include "tools/sbuffer.h"     // NOLINT
+#include "tools/random_element.h" // NOLINT
 
 namespace sol {
 template<class T, class... Args>
@@ -89,29 +90,6 @@ std::string to_string(stype _value, int _precision);
 
 bool is_close(Vector2f const&, Vector2f const&, float _r = 50, float _distance = 5);
 bool in_rect(Vector2f const& _point, FloatRect const& _rect);
-
-template<class T>
-T const& random_element(std::vector<T> const& _options)
-{
-    ASSERT(_options.size() != 0, math::exception, "empty vector!");
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_int_distribution<size_t> dist(0, _options.size() - 1);
-    return _options[dist(gen)];
-}
-
-template<std::ranges::range R>
-auto const& random_element(const R& _r)
-{
-    VERIFY(!std::ranges::empty(_r), math::exception, "empty range!");
-
-    static thread_local std::mt19937 gen{std::random_device{}()};
-    std::uniform_int_distribution<std::size_t> dist(0, std::ranges::size(_r) - 1);
-
-    auto it = std::ranges::begin(_r);
-    std::ranges::advance(it, dist(gen));
-    return *it;
-}
 
 float random_angle();
 
