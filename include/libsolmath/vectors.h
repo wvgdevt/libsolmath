@@ -107,5 +107,9 @@ constexpr T operator+(T const& _lhs, T const& _rhs)
 
 inline Vector2f operator*(Vector2f const& _lhs, float const& _rhs) { return {_lhs.x * _rhs, _lhs.y * _rhs}; }
 inline Vector2f operator/(Vector2f const& _lhs, float const& _rhs) { return {_lhs.x / _rhs, _lhs.y / _rhs}; }
-inline Vector2f operator/(Vector2i const& _lhs, float const& _rhs) { return {_lhs.x / _rhs, _lhs.y / _rhs}; }
+
+inline Vector2f operator/(Vector2i const& _lhs, float const& _rhs)
+{
+    return {static_cast<float>(_lhs.x) / _rhs, static_cast<float>(_lhs.y) / _rhs};
+}
 }

@@ -6,7 +6,6 @@
  * END_LICENSE */
 
 #pragma once
-#include <vector>
 #include <cmath>
 #include <cassert>
 #include <ranges>
@@ -37,22 +36,28 @@ std::shared_ptr<T> SHARED(Args&&... _args) // NOLINT
 namespace sol::math {
 #if defined(SOLMATH_PRECISION) && SOLMATH_PRECISION == float
 constexpr float EPSILON = 1e-6f;
-constexpr float TWO_PI  = 2.0 * M_PI;
-constexpr float PI      = M_PI;
+constexpr float TWO_PI  = 2.0f * std::numbers::pi_v<float>;
+constexpr float PI      = std::numbers::pi_v<float>;
 using stype             = float;
 #elif defined(SOLMATH_PRECISION) && SOLMATH_PRECISION == double
 constexpr double EPSILON = 1e-9;
-constexpr double TWO_PI  = 2.0 * M_PI;
-constexpr double PI      = M_PI;
+constexpr double TWO_PI  = 2.0 * std::numbers::pi_v<double>;
+constexpr double PI      = std::numbers::pi_v<double>;
 using PrecisionType      = double;
 #endif
 
-constexpr stype pi() { return M_PI; }
-constexpr stype two_pi() { return M_PI * 2.f; }
-constexpr stype e() { return M_E; }
+constexpr stype pi() { return PI; }
+constexpr stype two_pi() { return TWO_PI; }
+constexpr stype e() { return std::numbers::e_v<stype>; }
 stype point_direction(Vector2f const&, Vector2f const&);
 stype point_distance_heavy(Vector2f const&, Vector2f const&);
 bool point_distance(Vector2f const&, Vector2f const&, float);
+
+template<typename T>
+    requires std::is_arithmetic_v<T> && std::is_signed_v<T>
+T abs(const T _x) { return std::abs(_x); }
+
+Vector2f abs(Vector2f const& _x);
 
 stype cos(stype);
 stype sin(stype);
@@ -60,8 +65,6 @@ stype degtorad(stype); // NOLINT
 stype radtodeg(stype); // NOLINT
 stype pow(stype, stype);
 bool are_almost_equal(stype _a, stype _b);
-Vector2f abs(Vector2f const& _x);
-stype abs(stype _x);
 
 stype normalize_angle(stype);
 stype angle_to_diff(stype, stype);
@@ -94,9 +97,14 @@ bool in_rect(Vector2f const& _point, FloatRect const& _rect);
 float random_angle();
 
 template<class T>
+    requires std::is_enum_v<T>
 std::string enum_to_string(T _enum)
 {
-    return std::string{magic_enum::enum_name(_enum)};
+    auto name = magic_enum::enum_name(_enum);
+    if (!name.empty())
+        return std::string{name};
+
+    return std::to_string(static_cast<std::underlying_type_t<T>>(_enum));
 }
 
 template<class T>

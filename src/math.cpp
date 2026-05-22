@@ -71,7 +71,8 @@ bool is_close(Vector2f const& _a, Vector2f const& _b, const stype _r, const styp
 }
 
 Vector2f abs(Vector2f const& _x) { return Vector2f{abs(_x.x), abs(_x.y)}; }
-stype abs(const stype _x) { return std::abs(_x); }
+
+// Keep it stype to avoid computations on double
 stype cos(const stype _x) { return std::cos(_x); }
 stype sin(const stype _x) { return std::sin(_x); }
 
