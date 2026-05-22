@@ -22,9 +22,9 @@ template<class T>
 T average<T>::avg() const
 {
     if (m_history.empty())
-        return 0.0f;
-    T const sum = std::accumulate(m_history.begin(), m_history.end(), 0.0f);
-    return sum / m_history.size();
+        return 0;
+    T const sum = std::accumulate(m_history.begin(), m_history.end(), T{});
+    return sum / static_cast<T>(m_history.size());
 }
 
 template<class T>
