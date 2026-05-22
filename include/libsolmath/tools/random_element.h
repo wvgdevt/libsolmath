@@ -36,14 +36,20 @@ auto random_element_value(R&& _r)
 {
     VERIFY(!std::ranges::empty(_r), math::exception, "empty range!");
     static thread_local std::mt19937 gen{std::random_device{}()};
-    using Range     = std::remove_cvref_t<R>;
-    using Diff      = std::ranges::range_difference_t<Range>;
-    auto const size = static_cast<Diff>(std::ranges::size(_r));
+
+    using Range = std::remove_cvref_t<R>;
+    using Size  = std::ranges::range_size_t<Range>;
+    using Diff  = std::ranges::range_difference_t<Range>;
+
+    auto const size_unsigned = std::ranges::size(_r);
+    VERIFY(size_unsigned <= static_cast<Size>(std::numeric_limits<Diff>::max()), math::exception, "range too large");
+
+    auto const size = static_cast<Diff>(size_unsigned);
     std::uniform_int_distribution<Diff> dist(0, size - 1);
 
     auto it = std::ranges::begin(_r);
     std::ranges::advance(it, dist(gen));
 
-    return static_cast<std::ranges::range_value_t<Range>>(*it);
+    return std::ranges::range_value_t<Range>(*it);
 }
 }
