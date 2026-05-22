@@ -8,6 +8,7 @@
 #pragma once
 #include <cmath>
 #include <cassert>
+#include <numbers>
 #include <ranges>
 #include <random>
 #include <magic_enum/magic_enum.hpp>
