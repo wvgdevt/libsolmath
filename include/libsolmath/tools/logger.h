@@ -88,6 +88,31 @@ private:
     std::string m_log;
 };
 
+class function_logger {
+public:
+    explicit function_logger();
+    explicit function_logger(std::string _name);
+    static void add_note(std::string const&);
+    static void increment_log_depth();
+    static void decrement_log_depth();
+    ~function_logger();
+
+private:
+    static inline thread_local size_t s_depth = 0; // NOLINT
+    std::string m_name;
+};
+
+#ifdef NDEBUG
+#define LOG_FUNCTION_SCOPE() ((void)0)
+#define LOG_FUNCTION_SCOPE_SILENT() ((void)0)
+#else
+#define LOG_FUNCTION_SCOPE() \
+math::function_logger function_logger_scope_{ std::string(__PRETTY_FUNCTION__) }
+#define LOG_FUNCTION_SCOPE_SILENT() \
+math::function_logger function_logger_scope_{}
+#endif
+#define LOG_FUNCTION_ADD_NOTE(X) DEBUG_ONLY(math::function_logger::add_note(X););
+
 #define DEFINE_LOG_CHANNEL(CHANNEL_NAME, CHANNEL_STR)                                           \
     namespace sol::math::dc {                                                                   \
     namespace internal {                                                                        \

@@ -120,7 +120,7 @@ void tracer::write(size_t const _level, std::string const& _message)
                     continue;
 
                 previous->second.total_time += now - previous->second.last_time;
-                auto const color = color_by_time(previous->second.total_time);
+                auto const color            = color_by_time(previous->second.total_time);
                 get()._write(
                     previous->second.padding
                     + std::get<0>(color) + "[" + to_string(previous->second.total_time, 2) + "] total time"
@@ -143,7 +143,7 @@ void tracer::write(size_t const _level, std::string const& _message)
     auto const color      = color_by_time(time_diff);
     get()._write(
         data.padding + std::get<0>(color) + "[" + to_string(time_diff, 2) + "] " + _message + std::get<1>(color));
-    data.last_time = now;
+    data.last_time  = now;
     data.total_time += time_diff;
 
     current_level = _level;
@@ -170,5 +170,39 @@ std::string const& tracer::_log() const
 void tracer::_write(std::string const& _message)
 {
     m_log += _message + "\n";
+}
+
+function_logger::function_logger()
+{
+    ++s_depth;
+}
+
+function_logger::function_logger(std::string _name)
+    : m_name(std::move(_name))
+{
+    ++s_depth;
+    tracer::write(s_depth, m_name);
+}
+
+void function_logger::add_note(std::string const& _message)
+{
+    tracer::write(s_depth, _message);
+}
+
+void function_logger::increment_log_depth()
+{
+    s_depth++;
+}
+
+void function_logger::decrement_log_depth()
+{
+    s_depth--;
+}
+
+function_logger::~function_logger()
+{
+    if (!m_name.empty())
+        tracer::write(s_depth, "~" + std::string(m_name));
+    --s_depth;
 }
 }
