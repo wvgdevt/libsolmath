@@ -222,9 +222,9 @@ function_logger::function_logger(char const* _name)
     tracer::write(s_depth, m_name);
 }
 
-void function_logger::add_note(std::string const& _message)
+void function_logger::add_note_string(std::string_view const _msg)
 {
-    tracer::write(s_depth, _message);
+    tracer::write(s_depth, _msg);
 }
 
 void function_logger::increment_log_depth()

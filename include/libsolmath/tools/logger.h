@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 #include <deque>
+#include <format>
 #include <set>
 
 namespace sol::math {
@@ -43,6 +44,16 @@ class logger // NOLINT
 {
 public:
     static logger& get();
+
+    template<class... Args>
+    void log_formated(dc::internal::DebugChannel const& _channel,
+                      log_topic const& _topic,
+                      std::format_string<Args...> _fmt,
+                      Args&&... _args)
+    {
+        log(_channel, _topic, std::format(_fmt, std::forward<Args>(_args)...));
+    }
+
     void log(dc::internal::DebugChannel const&,
              log_topic const& _topic = log_topic(),
              std::string_view _msg   = {});
@@ -92,7 +103,15 @@ class function_logger {
 public:
     explicit function_logger();
     explicit function_logger(char const* _name);
-    static void add_note(std::string const&);
+
+    template<class... Args>
+    static void add_note(std::format_string<Args...> _fmt, Args&&... _args)
+    {
+        add_note_string(std::format(_fmt, std::forward<Args>(_args)...));
+    }
+
+    static void add_note_string(std::string_view _msg);
+
     static void increment_log_depth();
     static void decrement_log_depth();
     ~function_logger();
@@ -107,11 +126,13 @@ private:
 #define LOG_FUNCTION_SCOPE_SILENT() ((void)0)
 #else
 #define LOG_FUNCTION_SCOPE() \
-math::function_logger function_logger_scope_{__PRETTY_FUNCTION__}
+sol::math::function_logger function_logger_scope_{__PRETTY_FUNCTION__}
 #define LOG_FUNCTION_SCOPE_SILENT() \
-math::function_logger function_logger_scope_{}
+sol::math::function_logger function_logger_scope_{}
 #endif
-#define LOG_FUNCTION_ADD_NOTE(X) DEBUG_ONLY(math::function_logger::add_note(X););
+
+#define LOG_FUNCTION_ADD_NOTE(...) \
+    DEBUG_ONLY(sol::math::function_logger::add_note(__VA_ARGS__););
 
 #define DEFINE_LOG_CHANNEL(CHANNEL_NAME, CHANNEL_STR)                                           \
     namespace sol::math::dc {                                                                   \
@@ -134,9 +155,9 @@ math::function_logger function_logger_scope_{}
     }
 
 #define LOG_TOPIC(TOPIC)                                                                        \
-    sol::math::logger::get().set_console_topic(TOPIC)
-#define LOGT(CHANNEL, TOPIC, MESSAGE)                                                           \
-    sol::math::logger::get().log(CHANNEL, TOPIC, MESSAGE);
-#define LOG(CHANNEL, MESSAGE)                                                                   \
-    sol::math::logger::get().log(CHANNEL, { .id = 1 }, MESSAGE);
+    DEBUG_ONLY(sol::math::logger::get().set_console_topic(TOPIC););
+#define LOGT(CHANNEL, TOPIC, ...)                                                               \
+    DEBUG_ONLY(sol::math::logger::get().log_formated(CHANNEL, TOPIC, __VA_ARGS__););
+#define LOG(CHANNEL, ...)                                                                       \
+    DEBUG_ONLY(sol::math::logger::get().log_formated(CHANNEL, { .id = 1 }, __VA_ARGS__););
 }
