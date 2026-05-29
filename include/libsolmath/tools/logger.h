@@ -18,7 +18,7 @@ namespace dc::internal {
         virtual ~DebugChannel() = default;
 
         std::size_t to_sizet() const { return m_num; } // NOLINT
-        [[nodiscard]] virtual std::string const& to_string() const = 0;
+        [[nodiscard]] virtual std::string const& as_string() const = 0;
 
     protected:
         DebugChannel();
@@ -26,7 +26,7 @@ namespace dc::internal {
     private:
         DebugChannel(const DebugChannel&)            = delete; // NOLINT
         DebugChannel& operator=(const DebugChannel&) = delete; // NOLINT
-        static size_t num;
+        static size_t num;                                     // NOLINT
         size_t m_num;
     };
 }
@@ -45,7 +45,7 @@ public:
     static logger& get();
     void log(dc::internal::DebugChannel const&,
              log_topic const& _topic = log_topic(),
-             std::string const& _msg = std::string());
+             std::string_view _msg   = {});
     void filter_out(const dc::internal::DebugChannel&);
     void set_console_topic(log_topic const& _topic);
     void update(float);
@@ -76,22 +76,22 @@ private:
 class tracer {
 public:
     static tracer& get();
-    static void write(size_t _level, std::string const&);
+    static void write(size_t _level, std::string_view);
     static std::string const& log();
     static void flush();
 
 private:
     [[nodiscard]] std::string const& _log() const;
-    void _write(std::string const&);
+    void _write(std::string_view);
     void _flush() { m_log = ""; }
-    tracer() {}; // NOLINT
+    tracer() { m_log.reserve(16 * 1024); }; // NOLINT
     std::string m_log;
 };
 
 class function_logger {
 public:
     explicit function_logger();
-    explicit function_logger(std::string _name);
+    explicit function_logger(char const* _name);
     static void add_note(std::string const&);
     static void increment_log_depth();
     static void decrement_log_depth();
@@ -99,7 +99,7 @@ public:
 
 private:
     static inline thread_local size_t s_depth = 0; // NOLINT
-    std::string m_name;
+    char const* m_name;
 };
 
 #ifdef NDEBUG
@@ -107,7 +107,7 @@ private:
 #define LOG_FUNCTION_SCOPE_SILENT() ((void)0)
 #else
 #define LOG_FUNCTION_SCOPE() \
-math::function_logger function_logger_scope_{ std::string(__PRETTY_FUNCTION__) }
+math::function_logger function_logger_scope_{__PRETTY_FUNCTION__}
 #define LOG_FUNCTION_SCOPE_SILENT() \
 math::function_logger function_logger_scope_{}
 #endif
@@ -120,7 +120,7 @@ math::function_logger function_logger_scope_{}
     {                                                                                           \
     public:                                                                                     \
         CHANNEL_NAME##_decl() : DebugChannel() {};                                              \
-        std::string const& to_string() const override { return m_name; }                        \
+        std::string const& as_string() const override { return m_name; }                        \
     private:                                                                                    \
         std::string const m_name = CHANNEL_STR;                                                 \
     };                                                                                          \
