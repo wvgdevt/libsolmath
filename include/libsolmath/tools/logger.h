@@ -9,8 +9,8 @@
 #include <string>
 #include <map>
 #include <deque>
-#include <format>
 #include <set>
+#include <fmt/format.h>
 
 namespace sol::math {
 namespace dc::internal {
@@ -38,7 +38,7 @@ struct log_topic {
 
 ///
 /// \brief The logger class
-/// Allows to track log messages with custom debug channels defined from any lib
+/// Allows tracking log messages with custom debug channels defined from any lib
 ///
 class logger // NOLINT
 {
@@ -48,10 +48,10 @@ public:
     template<class... Args>
     void log_formated(dc::internal::DebugChannel const& _channel,
                       log_topic const& _topic,
-                      std::format_string<Args...> _fmt,
+                      fmt::format_string<Args...> _fmt,
                       Args&&... _args)
     {
-        log(_channel, _topic, std::format(_fmt, std::forward<Args>(_args)...));
+        log(_channel, _topic, fmt::format(_fmt, std::forward<Args>(_args)...));
     }
 
     void log(dc::internal::DebugChannel const&,
@@ -105,9 +105,9 @@ public:
     explicit function_logger(char const* _name);
 
     template<class... Args>
-    static void add_note(std::format_string<Args...> _fmt, Args&&... _args)
+    static void add_note(fmt::format_string<Args...> _fmt, Args&&... _args)
     {
-        add_note_string(std::format(_fmt, std::forward<Args>(_args)...));
+        add_note_string(fmt::format(_fmt, std::forward<Args>(_args)...));
     }
 
     static void add_note_string(std::string_view _msg);

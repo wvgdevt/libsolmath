@@ -6,8 +6,9 @@ target_include_directories(solmath PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_include_directories(solmath PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 target_include_directories(solmath PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../deps/magic_enum/include")
+target_include_directories(solmath PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../deps/fmt/include")
 target_compile_definitions(solmath PUBLIC SOLMATH_PRECISION=float)
-
+target_link_libraries(solmath PRIVATE fmt::fmt)
 
 add_custom_target(solmath_update_license
         COMMAND ${CMAKE_COMMAND}
