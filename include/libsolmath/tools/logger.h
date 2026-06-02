@@ -12,6 +12,8 @@
 #include <set>
 #include <fmt/format.h>
 
+#include "timer.h"
+
 namespace sol::math {
 namespace dc::internal {
     class DebugChannel {
@@ -91,11 +93,30 @@ public:
     static std::string const& log();
     static void flush();
 
+protected:
+    struct LevelData {
+        float total_time = 0;
+        float last_time  = 0;
+        std::string padding;
+    };
+
+    struct TraceState {
+        size_t current_level = 0;
+        bool has_current     = false;
+        math::timer timer;
+        std::map<size_t, LevelData> level_time;
+    };
+
+    [[nodiscard]] TraceState& get_state() { return m_state; }
+
 private:
     [[nodiscard]] std::string const& _log() const;
     void _write(std::string_view);
-    void _flush() { m_log = ""; }
+    void _flush();
     tracer() { m_log.reserve(16 * 1024); }; // NOLINT
+
+private:
+    TraceState m_state;
     std::string m_log;
 };
 

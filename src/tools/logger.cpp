@@ -18,12 +18,6 @@ struct ConsoleColor {
     std::string_view end;
 };
 
-struct LevelData {
-    float total_time{};
-    float last_time{};
-    std::string padding;
-};
-
 ConsoleColor color_by_time(float const _time)
 {
     if (_time > 1.f)
@@ -56,10 +50,6 @@ std::string prepare_message(float const _time, std::string_view const _padding, 
     line.append(color.end);
     return line;
 }
-
-sol::math::timer g_time;
-
-std::map<size_t, LevelData> g_level_time;
 }
 
 namespace sol::math {
@@ -131,42 +121,44 @@ std::deque<std::string> const& logger::messages()
 
 tracer& tracer::get()
 {
-    static tracer logger;
+    thread_local tracer logger;
     return logger;
 }
 
 void tracer::write(size_t const _level, std::string_view const _message)
 {
-    static size_t current_level = 0;
-    static bool has_current     = false;
+    auto& tracer       = get();
+    auto& tracer_state = tracer.get_state(); // NOLINT
 
-    float const now = g_time.passed_milliseconds();
+    float const now     = tracer_state.timer.passed_milliseconds();
+    auto& current_level = tracer_state.current_level;
+    auto& level_time    = tracer_state.level_time;
 
-    if (has_current)
+    if (tracer_state.has_current)
     {
         if (_level > current_level)
         {
-            auto const previous = g_level_time.find(current_level);
-            if (previous != g_level_time.end())
+            auto const previous = level_time.find(current_level);
+            if (previous != level_time.end())
                 previous->second.total_time += now - previous->second.last_time;
         }
         else if (_level < current_level)
         {
             for (size_t level = current_level; level > _level; --level)
             {
-                auto previous = g_level_time.find(level);
-                if (previous == g_level_time.end())
+                auto previous = level_time.find(level);
+                if (previous == level_time.end())
                     continue;
                 auto& level_data = previous->second; // NOLINT
 
                 level_data.total_time += now - level_data.last_time;
                 get()._write(prepare_message(level_data.total_time, level_data.padding, "total time"));
-                g_level_time.erase(previous);
+                level_time.erase(previous);
             }
         }
     }
 
-    auto [it, inserted] = g_level_time.try_emplace(_level);
+    auto [it, inserted] = level_time.try_emplace(_level);
     auto& line_data     = it->second; // NOLINT
     if (inserted)
     {
@@ -182,8 +174,8 @@ void tracer::write(size_t const _level, std::string_view const _message)
     line_data.last_time  = now;
     line_data.total_time += time_diff;
 
-    current_level = _level;
-    has_current   = true;
+    current_level            = _level;
+    tracer_state.has_current = true;
 }
 
 std::string const& tracer::log()
@@ -193,8 +185,6 @@ std::string const& tracer::log()
 
 void tracer::flush()
 {
-    g_time.reset();
-    g_level_time.clear();
     get()._flush();
 }
 
@@ -207,6 +197,13 @@ void tracer::_write(std::string_view const _message)
 {
     m_log.append(_message);
     m_log.push_back('\n');
+}
+
+void tracer::_flush()
+{
+    m_log = "";
+    m_state.timer.reset();
+    m_state.level_time.clear();
 }
 
 function_logger::function_logger() : m_name(nullptr)
