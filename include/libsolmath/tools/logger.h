@@ -86,6 +86,12 @@ private:
 #define DEBUG_ONLY(code) do { code; } while(0)
 #endif
 
+#if NTRACE
+#define TRACE_ONLY(code) ((void)0)
+#else
+#define TRACE_ONLY(code) do { code; } while(0)
+#endif
+
 class tracer {
 public:
     static tracer& get();
@@ -142,7 +148,7 @@ private:
     char const* m_name;
 };
 
-#ifdef NDEBUG
+#ifdef NTRACE
 #define LOG_FUNCTION_SCOPE() ((void)0)
 #define LOG_FUNCTION_SCOPE_SILENT() ((void)0)
 #else
@@ -153,7 +159,7 @@ sol::math::function_logger function_logger_scope_{}
 #endif
 
 #define LOG_FUNCTION_ADD_NOTE(...) \
-    DEBUG_ONLY(sol::math::function_logger::add_note(__VA_ARGS__););
+    TRACE_ONLY(sol::math::function_logger::add_note(__VA_ARGS__););
 
 #define DEFINE_LOG_CHANNEL(CHANNEL_NAME, CHANNEL_STR)                                           \
     namespace sol::math::dc {                                                                   \
