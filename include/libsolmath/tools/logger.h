@@ -147,7 +147,7 @@ private:
 #define LOG_FUNCTION_SCOPE_SILENT() ((void)0)
 #else
 #define LOG_FUNCTION_SCOPE() \
-sol::math::function_logger function_logger_scope_{__PRETTY_FUNCTION__}
+sol::math::function_logger const function_logger_scope_{__PRETTY_FUNCTION__}
 #define LOG_FUNCTION_SCOPE_SILENT() \
 sol::math::function_logger function_logger_scope_{}
 #endif
