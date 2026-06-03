@@ -86,10 +86,10 @@ private:
 #define DEBUG_ONLY(code) do { code; } while(0)
 #endif
 
-#if NTRACE
-#define TRACE_ONLY(code) ((void)0)
-#else
+#if defined(SOL_ENABLE_TRACES)
 #define TRACE_ONLY(code) do { code; } while(0)
+#else
+#define TRACE_ONLY(code) ((void)0)
 #endif
 
 class tracer {
@@ -148,14 +148,14 @@ private:
     char const* m_name;
 };
 
-#ifdef NTRACE
-#define LOG_FUNCTION_SCOPE() ((void)0)
-#define LOG_FUNCTION_SCOPE_SILENT() ((void)0)
-#else
+#if defined(SOL_ENABLE_TRACES)
 #define LOG_FUNCTION_SCOPE() \
 sol::math::function_logger const function_logger_scope_{__PRETTY_FUNCTION__}
 #define LOG_FUNCTION_SCOPE_SILENT() \
 sol::math::function_logger function_logger_scope_{}
+#else
+#define LOG_FUNCTION_SCOPE() ((void)0)
+#define LOG_FUNCTION_SCOPE_SILENT() ((void)0)
 #endif
 
 #define LOG_FUNCTION_ADD_NOTE(...) \

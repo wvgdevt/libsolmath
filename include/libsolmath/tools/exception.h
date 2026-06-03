@@ -57,15 +57,15 @@ std::string format_variadic(Args&&... _args)
     return ss.str();
 }
 
-#ifdef NDEBUG
-#define ASSERT(COND, EXCEPTION, ...) do { } while (0)
-#else
+#if defined(SOL_ENABLE_ASSERTS)
 #define ASSERT(COND, EXCEPTION, ...)                          \
 do {                                                          \
     if (!(COND)) {                                            \
         throw (EXCEPTION(format_variadic(__VA_ARGS__)));      \
     }                                                         \
 } while (0)
+#else
+#define ASSERT(COND, EXCEPTION, ...) do { } while (0)
 #endif
 
 #define VERIFY(COND, EXCEPTION, ...)                          \
