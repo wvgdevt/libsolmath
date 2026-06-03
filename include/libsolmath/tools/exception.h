@@ -57,7 +57,7 @@ std::string format_variadic(Args&&... _args)
     return ss.str();
 }
 
-#if defined(SOL_ENABLE_ASSERTS)
+#if SOL_ENABLE_ASSERTS
 #define ASSERT(COND, EXCEPTION, ...)                          \
 do {                                                          \
     if (!(COND)) {                                            \

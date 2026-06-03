@@ -86,7 +86,7 @@ private:
 #define DEBUG_ONLY(code) do { code; } while(0)
 #endif
 
-#if defined(SOL_ENABLE_TRACES)
+#if SOL_ENABLE_TRACES
 #define TRACE_ONLY(code) do { code; } while(0)
 #else
 #define TRACE_ONLY(code) ((void)0)
@@ -148,7 +148,7 @@ private:
     char const* m_name;
 };
 
-#if defined(SOL_ENABLE_TRACES)
+#if SOL_ENABLE_TRACES
 #define LOG_FUNCTION_SCOPE() \
 sol::math::function_logger const function_logger_scope_{__PRETTY_FUNCTION__}
 #define LOG_FUNCTION_SCOPE_SILENT() \
