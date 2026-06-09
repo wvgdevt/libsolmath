@@ -80,7 +80,7 @@ private:
     logger& operator=(const logger&) = delete; // NOLINT
 };
 
-#if NDEBUG
+#if NDEBUG && !SOL_ENABLE_TRACES
 #define DEBUG_ONLY(code) ((void)0)
 #else
 #define DEBUG_ONLY(code) do { code; } while(0)
