@@ -113,14 +113,6 @@ stype angle_to_diff(const stype _angle, const stype _to) // NOLINT
     return 0;
 }
 
-stype rand(const stype _from, const stype _to)
-{
-    const stype shift = abs(_to - _from);
-    if (_to > _from)
-        return _from + rand(shift);
-    return _to + rand(shift);
-}
-
 bool in_rect(Vector2f const& _point, FloatRect const& _rect)
 {
     if (_point.x >= _rect.x && _point.x <= _rect.x + _rect.width &&

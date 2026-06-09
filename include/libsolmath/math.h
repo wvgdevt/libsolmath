@@ -89,7 +89,40 @@ T rand(T const _max = 1.0f)
     return 0;
 }
 
-stype rand(stype _from, stype _to);
+template<class T>
+T rand_range(T _from, T _to)
+{
+    static_assert(std::is_arithmetic_v<T>, "rand_range requires arithmetic type");
+
+    if (_from == _to)
+        return _from;
+
+    if (_to < _from)
+        std::swap(_from, _to);
+
+    if constexpr (std::is_floating_point_v<T>)
+    {
+        // Floating point: [from, to)
+        return _from + rand(_to - _from);
+    }
+    else if constexpr (std::is_integral_v<T>)
+    {
+        using U = std::make_unsigned_t<T>;
+
+        U const width = static_cast<U>(_to - _from);
+
+        if (width == std::numeric_limits<U>::max())
+        {
+            // Full possible range. Avoid width + 1 overflow.
+            return static_cast<T>(rand(width));
+        }
+
+        // Integral: [from, to]
+        return static_cast<T>(_from + static_cast<T>(rand(width + U{1})));
+    }
+    return 0;
+}
+
 std::string to_string(stype _value, int _precision);
 
 bool is_close(Vector2f const&, Vector2f const&, float _r = 50, float _distance = 5);
