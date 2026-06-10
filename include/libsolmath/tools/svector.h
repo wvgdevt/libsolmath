@@ -13,6 +13,7 @@
 #include <iostream>
 #include <cassert>
 #include "exception.h"
+#include "logger.h"
 
 namespace sol::math {
 template<class K, class T>
@@ -85,6 +86,7 @@ private:
 
         m_vector.pop_back();
 
+#if SOL_ENABLE_ASSERTS
         for (size_t i = 0; i < m_vector.size(); ++i)
         {
             auto const& key = std::get<0>(m_vector.at(i));
@@ -93,6 +95,7 @@ private:
                 ASSERT(key == el->getKey(), math::exception, "Element key does not match!");
             ASSERT(m_index_map.at(key) == i, math::exception, "Index map does not match!");
         }
+#endif
     }
 
 private:

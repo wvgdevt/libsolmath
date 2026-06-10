@@ -50,15 +50,15 @@ using PrecisionType      = double;
 constexpr stype pi() { return PI; }
 constexpr stype two_pi() { return TWO_PI; }
 constexpr stype e() { return std::numbers::e_v<stype>; }
-stype point_direction(Vector2f const&, Vector2f const&);
-stype point_distance_heavy(Vector2f const&, Vector2f const&);
-bool point_distance(Vector2f const&, Vector2f const&, float);
+stype point_direction(Vector2f, Vector2f);
+stype point_distance_heavy(Vector2f, Vector2f);
+bool point_distance(Vector2f, Vector2f, float);
 
 template<typename T>
     requires std::is_arithmetic_v<T> && std::is_signed_v<T>
 T abs(const T _x) { return std::abs(_x); }
 
-Vector2f abs(Vector2f const& _x);
+Vector2f abs(Vector2f _x);
 
 stype cos(stype);
 stype sin(stype);
@@ -125,8 +125,8 @@ T rand_range(T _from, T _to)
 
 std::string to_string(stype _value, int _precision);
 
-bool is_close(Vector2f const&, Vector2f const&, float _r = 50, float _distance = 5);
-bool in_rect(Vector2f const& _point, FloatRect const& _rect);
+bool is_close(Vector2f, Vector2f, float _r = 50, float _distance = 5);
+bool in_rect(Vector2f _point, FloatRect _rect);
 
 float random_angle();
 
@@ -153,7 +153,7 @@ inline bool float_equal(float const _a, float const _b)
     return std::abs(_a - _b) < epsilon;
 }
 
-inline bool float_equal(Vector2f const& _a, Vector2f const& _b)
+inline bool float_equal(Vector2f const _a, Vector2f const _b)
 {
     constexpr float epsilon = 1e-6f; // Adjust as appropriate
     return std::abs(_a.x - _b.x) < epsilon && std::abs(_a.y - _b.y) < epsilon;

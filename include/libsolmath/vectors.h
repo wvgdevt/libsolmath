@@ -13,13 +13,15 @@ namespace sol::math {
 struct Vector2f // NOLINT
 {
     Vector2f() : x(0), y(0) {}
+
+    // TODO where is it used?
     explicit constexpr Vector2f(std::tuple<float, float> const& _xy) : x(std::get<0>(_xy)), y(std::get<1>(_xy)) {}
+
     constexpr Vector2f(const float _x, const float _y) : x(_x), y(_y) {}
 
-    static Vector2f const& zero_vector()
+    static Vector2f zero_vector()
     {
-        static Vector2f zero_vector(0.0f, 0.0f);
-        return zero_vector;
+        return Vector2f{0.0f, 0.0f};
     }
 
     [[nodiscard]] Vector2f normalized() const
@@ -33,26 +35,26 @@ struct Vector2f // NOLINT
     [[nodiscard]] float length() const { return std::sqrt(x * x + y * y); }
     [[nodiscard]] bool is_zero() const { return std::fabs(x) < 0.001 && std::fabs(y) < 0.001; }
 
-    void operator+=(Vector2f const& _rhs)
+    void operator+=(Vector2f const _rhs)
     {
         x += _rhs.x;
         y += _rhs.y;
     }
 
-    void operator-=(Vector2f const& _rhs)
+    void operator-=(Vector2f const _rhs)
     {
         x -= _rhs.x;
         y -= _rhs.y;
     }
 
-    void operator*=(float const& _rhs)
+    void operator*=(float const _rhs)
     {
         x *= _rhs;
         y *= _rhs;
     }
 
-    bool operator >(Vector2f const& _rhs) const { return x > _rhs.x && y > _rhs.y; }
-    bool operator <(Vector2f const& _rhs) const { return x < _rhs.x && y < _rhs.y; }
+    bool operator >(Vector2f const _rhs) const { return x > _rhs.x && y > _rhs.y; }
+    bool operator <(Vector2f const _rhs) const { return x < _rhs.x && y < _rhs.y; }
 
 public:
     float x;
@@ -94,21 +96,21 @@ template<class T>
 concept vec2_only = std::same_as<T, Vector2f> || std::same_as<T, Vector2i>;
 
 template<vec2_only T>
-constexpr T operator-(T const& _lhs, T const& _rhs) noexcept
+constexpr T operator-(T const _lhs, T const _rhs) noexcept
 {
     return {_lhs.x - _rhs.x, _lhs.y - _rhs.y};
 }
 
 template<vec2_only T>
-constexpr T operator+(T const& _lhs, T const& _rhs)
+constexpr T operator+(T const _lhs, T const _rhs)
 {
     return {_lhs.x + _rhs.x, _lhs.y + _rhs.y};
 }
 
-inline Vector2f operator*(Vector2f const& _lhs, float const& _rhs) { return {_lhs.x * _rhs, _lhs.y * _rhs}; }
-inline Vector2f operator/(Vector2f const& _lhs, float const& _rhs) { return {_lhs.x / _rhs, _lhs.y / _rhs}; }
+inline Vector2f operator*(Vector2f const _lhs, float const _rhs) { return {_lhs.x * _rhs, _lhs.y * _rhs}; }
+inline Vector2f operator/(Vector2f const _lhs, float const _rhs) { return {_lhs.x / _rhs, _lhs.y / _rhs}; }
 
-inline Vector2f operator/(Vector2i const& _lhs, float const& _rhs)
+inline Vector2f operator/(Vector2i const _lhs, float const _rhs)
 {
     return {static_cast<float>(_lhs.x) / _rhs, static_cast<float>(_lhs.y) / _rhs};
 }

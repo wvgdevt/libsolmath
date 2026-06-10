@@ -22,7 +22,7 @@ stype point_direction(const stype _x, const stype _y, const stype _x2, const sty
     return std::atan2(-_x2 + _x, _y2 - _y);
 }
 
-stype point_direction(Vector2f const& _x, Vector2f const& _y) { return std::atan2(-_y.x + _x.x, _y.y - _x.y); }
+stype point_direction(Vector2f const _x, Vector2f const _y) { return std::atan2(-_y.x + _x.x, _y.y - _x.y); }
 
 stype point_distance_heavy(const stype _x, const stype _y, const stype _x2, const stype _y2)
 {
@@ -31,7 +31,7 @@ stype point_distance_heavy(const stype _x, const stype _y, const stype _x2, cons
     return std::sqrt(dx * dx + dy * dy);
 }
 
-stype point_distance_heavy(Vector2f const& _a, Vector2f const& _b)
+stype point_distance_heavy(Vector2f const _a, Vector2f const _b)
 {
     const stype dx = _b.x - _a.x;
     const stype dy = _b.y - _a.y;
@@ -46,7 +46,7 @@ bool point_distance(const stype _x, const stype _y, const stype _x2, const stype
     return false;
 }
 
-bool point_distance(Vector2f const& _a, Vector2f const& _b, float const _distance)
+bool point_distance(Vector2f const _a, Vector2f const _b, float const _distance)
 {
     if (_a.x < _b.x + _distance && _a.x > _b.x - _distance &&
         _a.y < _b.y + _distance && _a.y > _b.y - _distance)
@@ -62,7 +62,7 @@ bool is_close(const stype _x, const stype _y, const stype _x2, const stype _y2, 
     return false;
 }
 
-bool is_close(Vector2f const& _a, Vector2f const& _b, const stype _r, const stype _distance)
+bool is_close(Vector2f const _a, Vector2f const _b, const stype _r, const stype _distance)
 {
     if (_a.x < _b.x + _r && _a.x > _b.x - _r &&
         _a.y < _b.y + _r && _a.y > _b.y - _r)
@@ -70,7 +70,7 @@ bool is_close(Vector2f const& _a, Vector2f const& _b, const stype _r, const styp
     return false;
 }
 
-Vector2f abs(Vector2f const& _x) { return Vector2f{abs(_x.x), abs(_x.y)}; }
+Vector2f abs(Vector2f const _x) { return Vector2f{abs(_x.x), abs(_x.y)}; }
 
 // Keep it stype to avoid computations on double
 stype cos(const stype _x) { return std::cos(_x); }
@@ -113,7 +113,7 @@ stype angle_to_diff(const stype _angle, const stype _to) // NOLINT
     return 0;
 }
 
-bool in_rect(Vector2f const& _point, FloatRect const& _rect)
+bool in_rect(Vector2f const _point, FloatRect const _rect)
 {
     if (_point.x >= _rect.x && _point.x <= _rect.x + _rect.width &&
         _point.y >= _rect.y && _point.y <= _rect.y + _rect.height)

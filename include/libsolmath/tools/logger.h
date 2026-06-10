@@ -80,7 +80,7 @@ private:
     logger& operator=(const logger&) = delete; // NOLINT
 };
 
-#if NDEBUG && !SOL_ENABLE_TRACES
+#if NDEBUG
 #define DEBUG_ONLY(code) ((void)0)
 #else
 #define DEBUG_ONLY(code) do { code; } while(0)
@@ -182,9 +182,9 @@ sol::math::function_logger function_logger_scope_{}
     }
 
 #define LOG_TOPIC(TOPIC)                                                                        \
-    DEBUG_ONLY(sol::math::logger::get().set_console_topic(TOPIC););
+    TRACE_ONLY(sol::math::logger::get().set_console_topic(TOPIC););
 #define LOGT(CHANNEL, TOPIC, ...)                                                               \
-    DEBUG_ONLY(sol::math::logger::get().log_formated(CHANNEL, TOPIC, __VA_ARGS__););
+    TRACE_ONLY(sol::math::logger::get().log_formated(CHANNEL, TOPIC, __VA_ARGS__););
 #define LOG(CHANNEL, ...)                                                                       \
-    DEBUG_ONLY(sol::math::logger::get().log_formated(CHANNEL, { .id = 1 }, __VA_ARGS__););
+    TRACE_ONLY(sol::math::logger::get().log_formated(CHANNEL, { .id = 1 }, __VA_ARGS__););
 }
