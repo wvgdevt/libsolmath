@@ -42,7 +42,7 @@ size_t average<T>::logs_count() const
 }
 
 // Explicit instantiation for specific types
-template class average<int>;
-template class average<float>;
-template class average<double>;
+template struct average<int>;
+template struct average<float>;
+template struct average<double>;
 }

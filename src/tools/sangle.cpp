@@ -12,8 +12,8 @@ namespace sol::math {
 sangle::sangle() // NOLINT
 {
     m_angle = 0;
-    m_sin   = std::sin(0);
-    m_cos   = std::cos(0);
+    m_sin   = std::sin(0.f);
+    m_cos   = std::cos(0.f);
 }
 
 sangle::sangle(float _value) // NOLINT
