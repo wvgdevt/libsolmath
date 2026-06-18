@@ -68,6 +68,17 @@ do {                                                          \
 #define ASSERT(COND, EXCEPTION, ...) do { } while (0)
 #endif
 
+#if NDEBUG
+#define DEBUG_ASSERT(COND, EXCEPTION, ...) do { } while (0)
+#else
+#define DEBUG_ASSERT(COND, EXCEPTION, ...)                    \
+do {                                                          \
+    if (!(COND)) {                                            \
+        throw (EXCEPTION(format_variadic(__VA_ARGS__)));      \
+    }                                                         \
+} while (0)
+#endif
+
 #define VERIFY(COND, EXCEPTION, ...)                          \
 do {                                                          \
     if (!(COND)) {                                            \
