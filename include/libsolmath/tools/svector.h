@@ -31,8 +31,13 @@ public:
 
     void clear()
     {
+        DEBUG_ASSERT(m_iteration_depth == 0, math::exception, "Clear while iteration!");
+        m_iteration_depth   = 0;
+        m_modification_mode = container_modification::not_allowed;
         m_index_map.clear();
         m_vector.clear();
+        m_vector_add_buffer.clear();
+        m_vector_remove_buffer.clear();
     }
 
     bool contains(K const _key) const { return m_index_map.contains(_key); }
@@ -91,10 +96,6 @@ public:
     std::vector<T*> const& vector_unsafe() const { return m_vector; }
     [[nodiscard]] size_t size() const { return m_vector.size(); }
 
-    const_iterator find(K const _key) const { return m_index_map.find(_key); }
-    const_iterator end() const { return m_index_map.end(); }
-    T* to_element(const_iterator _it) const { return m_vector.at(_it->second); }
-
     void erase(K const _key)
     {
         if (m_iteration_depth > 0)
@@ -120,13 +121,6 @@ public:
             }
             _remove(it_index_map);
         }
-    }
-
-    void erase(const_iterator _it)
-    {
-        DEBUG_ASSERT(m_iteration_depth == 0, math::exception, "Erase while iteration!");
-        DEBUG_ASSERT(_it != m_index_map.end(), math::exception, "Invalid iterator!");
-        _remove(_it);
     }
 
 private:
