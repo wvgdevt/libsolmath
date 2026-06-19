@@ -13,6 +13,8 @@
 #include <cstddef>
 #include <iostream>
 #include <cassert>
+#include <unordered_set>
+
 #include "exception.h"
 #include "logger.h"
 
@@ -71,19 +73,14 @@ public:
 
     void emplace(K const _key, T* _x)
     {
-        DEBUG_ONLY(
-            assert(_x != nullptr);
-            assert(!m_index_map.contains(_key));
-        );
-
+        DEBUG_ONLY(assert(_x != nullptr););
         if (!m_iteration_modes.empty())
         {
-            VERIFY(m_iteration_modes.back() == container_modification::allowed, math::exception,
-                   "emplace while const_iteration!");
+            VERIFY(_modification_allowed(), math::exception, "emplace while const_iteration!");
             _emplace_while_iteration(_key, _x);
             return;
         }
-        m_index_map.emplace(_key, m_vector.size());
+        VERIFY(m_index_map.emplace(_key, m_vector.size()).second, math::exception, "Key already exists!");
         m_vector.emplace_back(_x);
     }
 
@@ -94,8 +91,7 @@ public:
     {
         if (!m_iteration_modes.empty())
         {
-            VERIFY(m_iteration_modes.back() == container_modification::allowed, math::exception,
-                   "erase while const_iteration!");
+            VERIFY(_modification_allowed(), math::exception, "erase while const_iteration!");
             _erase_while_iteration(_key);
             return;
         }
@@ -112,8 +108,7 @@ public:
         {
             if (!m_iteration_modes.empty())
             {
-                VERIFY(m_iteration_modes.back() == container_modification::allowed, math::exception,
-                       "erase_if_present while const_iteration!");
+                VERIFY(_modification_allowed(), math::exception, "erase_if_present while const_iteration!");
                 _erase_while_iteration(_key);
                 return;
             }
@@ -136,34 +131,31 @@ private:
 
     void _emplace_while_iteration(K const _key, T* _x)
     {
-        DEBUG_ASSERT(!m_iteration_modes.empty() && m_iteration_modes.back() == container_modification::allowed,
-                     math::exception, "modification not allowed!");
-        m_vector_add_buffer.push_back(_x);
+        DEBUG_ASSERT(_modification_allowed(), math::exception, "modification not allowed!");
+        DEBUG_ASSERT(_x != nullptr, math::exception, "cannot emplace null in svector_pointers!");
+        DEBUG_ASSERT(_key == _x->get_id(), math::exception, "key does not match element id in svector_pointers!");
 
-        // TODO do we need it?
-        auto const it = std::ranges::find_if(m_vector_remove_buffer,
-                                             [_key](K const _element_key) {
-                                                 return _element_key == _key;
-                                             });
-        if (it != m_vector_remove_buffer.end())
-            m_vector_remove_buffer.erase(it);
+        // Do it in debug because it will be heavy on large emplace buffers
+        DEBUG_ASSERT(_find_add_buffer(_key) == m_vector_add_buffer.end(), math::exception,
+                     "key already scheduled for emplace in svector_pointers!");
+
+        m_vector_remove_buffer.erase(_key);
+        m_vector_add_buffer.push_back(_x);
     }
 
     void _erase_while_iteration(K _key)
     {
-        DEBUG_ASSERT(!m_iteration_modes.empty() && m_iteration_modes.back() == container_modification::allowed,
-                     math::exception, "modification not allowed!");
-        auto const it = std::ranges::find_if(m_vector_add_buffer,
-                                             [_key](T const* _element) {
-                                                 return _key == _element->get_id();
-                                             });
-        if (it != m_vector_add_buffer.end())
-            m_vector_add_buffer.erase(it);
-        else
+        DEBUG_ASSERT(_modification_allowed(), math::exception, "modification not allowed!");
+
+        auto const add_it = _find_add_buffer(_key);
+        if (add_it != m_vector_add_buffer.end())
         {
-            m_vector_remove_buffer.push_back(_key);
-            _null_element(_key);
+            m_vector_add_buffer.erase(add_it);
+            return;
         }
+
+        m_vector_remove_buffer.emplace(_key);
+        _null_element(_key);
     }
 
     void _process_buffer()
@@ -202,13 +194,25 @@ private:
         m_vector.pop_back();
     }
 
+    [[nodiscard]] bool _modification_allowed() const
+    {
+        return std::ranges::none_of(m_iteration_modes, [](container_modification const _mode) {
+            return _mode == container_modification::not_allowed;
+        });
+    }
+
+    [[nodiscard]] auto _find_add_buffer(K const _key) const
+    {
+        return std::ranges::find_if(m_vector_add_buffer, [_key](T const* _element) {
+            return _key == _element->get_id();
+        });
+    }
+
 private:
-    //mutable size_t m_iteration_depth                   = 0;
-    //mutable container_modification m_modification_mode = container_modification::not_allowed;
     mutable std::vector<container_modification> m_iteration_modes;
     std::vector<T*> m_vector;
     std::vector<T*> m_vector_add_buffer;
-    std::vector<K> m_vector_remove_buffer;
+    std::unordered_set<K> m_vector_remove_buffer;
     std::unordered_map<K, size_t> m_index_map;
 };
 
