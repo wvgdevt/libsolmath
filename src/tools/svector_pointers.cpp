@@ -5,6 +5,6 @@
  * Full license text is in the repository root LICENSE file.
  * END_LICENSE */
 
-#include "libsolmath/tools/svector.h"
+#include "libsolmath/tools/svector_pointers.h"
 
 namespace sol::math {}
