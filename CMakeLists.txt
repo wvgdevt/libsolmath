@@ -20,3 +20,31 @@ add_custom_target(solmath_update_license
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 set_target_properties(solmath_update_license PROPERTIES EXCLUDE_FROM_ALL TRUE)
+
+
+option(SOLMATH_BUILD_TESTS "Build solmath tests" ON)
+
+if (SOLMATH_BUILD_TESTS)
+    enable_testing()
+
+    add_executable(solmath_tests
+            tests/tests.cpp
+            tests/test_svector.cpp
+    )
+
+    target_include_directories(solmath_tests PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_include_directories(solmath_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/")
+    target_include_directories(solmath_tests PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../deps/magic_enum/include")
+    target_include_directories(solmath_tests PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../deps/fmt/include")
+    target_compile_definitions(solmath_tests PUBLIC SOLMATH_PRECISION=float)
+
+    target_link_libraries(solmath_tests
+            PRIVATE
+            fmt::fmt
+    )
+
+    add_test(
+            NAME solmath_tests
+            COMMAND solmath_tests
+    )
+endif ()

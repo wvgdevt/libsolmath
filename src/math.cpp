@@ -12,6 +12,8 @@
 
 using namespace sol::math;
 
+INIT_LOG_CHANNEL(MATH);
+
 namespace sol::math {
 bool are_almost_equal(const stype _a, const stype _b) { return std::fabs(_a - _b) < EPSILON; }
 

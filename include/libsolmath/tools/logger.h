@@ -188,3 +188,5 @@ sol::math::function_logger::add_note(__VA_ARGS__);
 #define LOG(CHANNEL, ...)                                                                       \
     LOG_ONLY(sol::math::logger::get().log_formated(CHANNEL, { .id = 1 }, __VA_ARGS__););
 }
+
+DEFINE_LOG_CHANNEL(MATH, "[MATH]: ");
