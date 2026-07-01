@@ -25,7 +25,7 @@ struct TestObject {
     int updates = 0;
 };
 
-using TestVector = sol::math::svector_pointers<int, TestObject>;
+using TestVector = sol::math::svector_pointers<int, TestObject*>;
 
 void test_emplace_find_iteration_order()
 {
