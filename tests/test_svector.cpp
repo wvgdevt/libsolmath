@@ -5,8 +5,9 @@
  * Full license text is in the repository root LICENSE file.
  * END_LICENSE */
 
+#include <iostream>
 #include "tests.h"
-#include "libsolmath/tools/svector_pointers.h"
+#include "libsolmath/tools/svector.h"
 
 #define PRINT_FUNC_NAME() std::cout << __PRETTY_FUNCTION__ << std::endl;
 
@@ -25,7 +26,7 @@ struct TestObject {
     int updates = 0;
 };
 
-using TestVector = sol::math::svector_pointers<int, TestObject*>;
+using TestVector = sol::math::svector<int, TestObject*>;
 
 void test_emplace_find_iteration_order()
 {
