@@ -18,6 +18,11 @@
 #include "logger.h"
 
 namespace sol::math {
+enum class erase_mode { // NOLINT
+    strict,             // NOLINT
+    allow_pending_add   // NOLINT
+};
+
 // Helper trait that extracts the "object type" stored behind a value.
 // By default, the type is assumed to already be the object type.
 // Example: pointee_type<Foo>::type == Foo
@@ -231,13 +236,12 @@ public:
     //   If no iteration is active, the element is removed immediately from the committed dense storage.
     //   If iteration is active, the removal is buffered and applied after iteration finishes.
     //   This avoids invalidating the active iterator/view.
-    void erase(K const _key)
+    void erase(K const _key, erase_mode const _mode = erase_mode::strict)
     {
         if (!m_iteration_modes.empty())
         {
             VERIFY(_modification_allowed(), math::exception, "erase while const_iteration!");
-            DEBUG_ASSERT(m_index_map.contains(_key), math::exception, "_key not found!");
-            _erase_while_iteration(_key);
+            _erase_while_iteration(_key, _mode);
             return;
         }
 
@@ -260,7 +264,7 @@ public:
 
             VERIFY(_modification_allowed(), math::exception, "erase_if_present while const_iteration!");
 
-            _erase_while_iteration(_key);
+            _erase_while_iteration(_key, erase_mode::strict);
             return;
         }
 
@@ -388,9 +392,19 @@ private:
     // Therefore:
     //   - a key scheduled for adding cannot be erased;
     //   - a key scheduled for erasing cannot be erased again.
-    void _erase_while_iteration(K const _key)
+    void _erase_while_iteration(K const _key, erase_mode const _mode)
     {
-        VERIFY(!m_set_add_buffer_keys.contains(_key), math::exception,
+        auto const add_buffer_it = m_set_add_buffer_keys.find(_key);
+        if (_mode == erase_mode::allow_pending_add && add_buffer_it != m_set_add_buffer_keys.end())
+        {
+            auto it = _find_add_buffer(_key);
+            VERIFY(it != m_vector_add_buffer.end(), math::exception, "add-buffer key exists but object not found");
+            m_vector_add_buffer.erase(it);
+            m_set_add_buffer_keys.erase(add_buffer_it);
+            return;
+        }
+
+        VERIFY(add_buffer_it == m_set_add_buffer_keys.end(), math::exception,
                "key already scheduled for emplace in svector!");
         VERIFY(m_set_remove_buffer_keys.emplace(_key).second, math::exception,
                "key already scheduled for erase in svector!");
