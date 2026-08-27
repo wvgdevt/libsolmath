@@ -20,7 +20,6 @@
 #include "tools/timer.h"       // NOLINT
 #include "tools/threadpool.h"  // NOLINT
 #include "tools/sangle.h"      // NOLINT
-#include "tools/svector.h"     // NOLINT
 #include "tools/logger.h"      // NOLINT
 #include "tools/exception.h"   // NOLINT
 #include "tools/sbuffer.h"     // NOLINT

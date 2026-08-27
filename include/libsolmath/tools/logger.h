@@ -86,10 +86,10 @@ private:
 #define DEBUG_ONLY(code) do { code; } while(0)
 #endif
 
-#if SOL_ENABLE_TRACES
-#define TRACE_ONLY(code) do { code; } while(0)
+#if SOL_ENABLE_LOGS
+#define LOG_ONLY(code) do { code; } while(0)
 #else
-#define TRACE_ONLY(code) ((void)0)
+#define LOG_ONLY(code) ((void)0)
 #endif
 
 class tracer {
@@ -153,13 +153,13 @@ private:
 sol::math::function_logger const function_logger_scope_{__PRETTY_FUNCTION__}
 #define LOG_FUNCTION_SCOPE_SILENT() \
 sol::math::function_logger function_logger_scope_{}
-#else
-#define LOG_FUNCTION_SCOPE() ((void)0)
-#define LOG_FUNCTION_SCOPE_SILENT() ((void)0)
-#endif
-
 #define LOG_FUNCTION_ADD_NOTE(...) \
-    TRACE_ONLY(sol::math::function_logger::add_note(__VA_ARGS__););
+sol::math::function_logger::add_note(__VA_ARGS__);
+#else
+#define LOG_FUNCTION_SCOPE() ((void)0);
+#define LOG_FUNCTION_SCOPE_SILENT() ((void)0);
+#define LOG_FUNCTION_ADD_NOTE(...) ((void)0);
+#endif
 
 #define DEFINE_LOG_CHANNEL(CHANNEL_NAME, CHANNEL_STR)                                           \
     namespace sol::math::dc {                                                                   \
@@ -182,9 +182,11 @@ sol::math::function_logger function_logger_scope_{}
     }
 
 #define LOG_TOPIC(TOPIC)                                                                        \
-    TRACE_ONLY(sol::math::logger::get().set_console_topic(TOPIC););
+    LOG_ONLY(sol::math::logger::get().set_console_topic(TOPIC););
 #define LOGT(CHANNEL, TOPIC, ...)                                                               \
-    TRACE_ONLY(sol::math::logger::get().log_formated(CHANNEL, TOPIC, __VA_ARGS__););
+    LOG_ONLY(sol::math::logger::get().log_formated(CHANNEL, TOPIC, __VA_ARGS__););
 #define LOG(CHANNEL, ...)                                                                       \
-    TRACE_ONLY(sol::math::logger::get().log_formated(CHANNEL, { .id = 1 }, __VA_ARGS__););
+    LOG_ONLY(sol::math::logger::get().log_formated(CHANNEL, { .id = 1 }, __VA_ARGS__););
 }
+
+DEFINE_LOG_CHANNEL(MATH, "[MATH]: ");
