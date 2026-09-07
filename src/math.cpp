@@ -48,6 +48,7 @@ bool point_distance(const stype _x, const stype _y, const stype _x2, const stype
     return false;
 }
 
+// TODO this point_distance_lt
 bool point_distance(Vector2f const _a, Vector2f const _b, float const _distance)
 {
     if (_a.x < _b.x + _distance && _a.x > _b.x - _distance &&

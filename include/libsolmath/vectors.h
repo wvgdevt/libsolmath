@@ -92,6 +92,32 @@ struct FloatRect {
     float height;
 };
 
+inline bool intersects(FloatRect const& _lhs, FloatRect const& _rhs)
+{
+    return _lhs.x <= _rhs.x + _rhs.width &&
+           _lhs.x + _lhs.width >= _rhs.x &&
+           _lhs.y <= _rhs.y + _rhs.height &&
+           _lhs.y + _lhs.height >= _rhs.y;
+}
+
+inline bool contains(FloatRect const& _rect, Vector2f const& _point)
+{
+    return _point.x >= _rect.x &&
+           _point.x <= _rect.x + _rect.width &&
+           _point.y >= _rect.y &&
+           _point.y <= _rect.y + _rect.height;
+}
+
+inline FloatRect make_view_rect(Vector2f const& _center, float const _distance_x, float const _distance_y)
+{
+    return {
+        .x = _center.x - _distance_x,
+        .y = _center.y - _distance_y,
+        .width = _distance_x * 2.0f,
+        .height = _distance_y * 2.0f,
+    };
+}
+
 template<class T>
 concept vec2_only = std::same_as<T, Vector2f> || std::same_as<T, Vector2i>;
 
