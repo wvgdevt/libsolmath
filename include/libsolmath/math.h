@@ -59,6 +59,12 @@ T abs(const T _x) { return std::abs(_x); }
 
 Vector2f abs(Vector2f _x);
 
+template<typename T>
+[[nodiscard]] constexpr T max(T _a, T _b) { return std::max(_a, _b); }
+
+template<typename T>
+[[nodiscard]] constexpr T min(T _a, T _b) { return std::min(_a, _b); }
+
 stype cos(stype);
 stype sin(stype);
 stype degtorad(stype); // NOLINT
@@ -69,19 +75,30 @@ bool are_almost_equal(stype _a, stype _b);
 stype normalize_angle(stype);
 stype angle_to_diff(stype, stype);
 
-template<class T>
-T rand(T const _max = 1.0f)
+inline std::mt19937& random_device()
 {
     thread_local static std::mt19937 gen{std::random_device{}()};
+    return gen;
+}
+
+inline std::mt19937 random_device(std::uint32_t const _seed)
+{
+    std::mt19937 const gen{_seed};
+    return gen;
+}
+
+template<class T>
+T rand(T const _max, std::mt19937& _gen = random_device())
+{
     if constexpr (std::is_floating_point_v<T>)
     {
         std::uniform_real_distribution<T> dist(0, _max);
-        return dist(gen);
+        return dist(_gen);
     }
     else if constexpr (std::is_integral_v<T>)
     {
         std::uniform_int_distribution<T> dist(0, _max);
-        return dist(gen);
+        return dist(_gen);
     }
     else
         static_assert(std::is_arithmetic_v<T>, "T must be arithmetic");
@@ -89,7 +106,7 @@ T rand(T const _max = 1.0f)
 }
 
 template<class T>
-T rand_range(T _from, T _to)
+T rand_range(T _from, T _to, std::mt19937& _gen = random_device())
 {
     static_assert(std::is_arithmetic_v<T>, "rand_range requires arithmetic type");
 
@@ -102,7 +119,7 @@ T rand_range(T _from, T _to)
     if constexpr (std::is_floating_point_v<T>)
     {
         // Floating point: [from, to)
-        return _from + rand(_to - _from);
+        return _from + rand(_to - _from, _gen);
     }
     else if constexpr (std::is_integral_v<T>)
     {
@@ -113,11 +130,11 @@ T rand_range(T _from, T _to)
         if (width == std::numeric_limits<U>::max())
         {
             // Full possible range. Avoid width + 1 overflow.
-            return static_cast<T>(rand(width));
+            return static_cast<T>(rand(width, _gen));
         }
 
         // Integral: [from, to]
-        return static_cast<T>(_from + static_cast<T>(rand(width + U{1})));
+        return static_cast<T>(_from + static_cast<T>(rand(width, _gen)));
     }
     return 0;
 }
@@ -127,7 +144,11 @@ std::string to_string(stype _value, int _precision);
 bool is_close(Vector2f, Vector2f, float _r = 50, float _distance = 5);
 bool in_rect(Vector2f _point, FloatRect _rect);
 
-float random_angle();
+inline float random_angle(std::mt19937& _gen = random_device())
+{
+    std::uniform_real_distribution<float> angle_dist(0.f, 2.f * std::numbers::pi_v<float>);
+    return angle_dist(_gen);
+}
 
 template<class T>
     requires std::is_enum_v<T>

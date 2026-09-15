@@ -143,21 +143,4 @@ std::string current_date(std::string_view const _fmt)
     ss << std::put_time(&tm, _fmt.data());
     return ss.str();
 }
-
-float random_angle()
-{
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-
-    std::uniform_real_distribution<float> angle_dist(0.f, 2.f * std::numbers::pi_v<float>);
-    return angle_dist(gen);
-}
-
-/*template<class T>
-T rand(T _max)
-{
-    return (T)(std::rand() / RAND_MAX) * _max;
-}
-template int rand<int>(int);
-template float rand<float>(float);*/
 }
