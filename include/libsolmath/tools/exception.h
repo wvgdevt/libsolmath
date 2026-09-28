@@ -68,6 +68,12 @@ do {                                                          \
 #define ASSERT(COND, EXCEPTION, ...) do { } while (0)
 #endif
 
+#if SOL_ENABLE_ASSERTS
+#define ASSERT_ONLY(code) do { code; } while(0)
+#else
+#define ASSERT_ONLY(code) ((void)0)
+#endif
+
 #if NDEBUG
 #define DEBUG_ASSERT(COND, EXCEPTION, ...) do { } while (0)
 #else
