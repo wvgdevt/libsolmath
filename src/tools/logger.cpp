@@ -106,7 +106,7 @@ void logger::log(dc::internal::DebugChannel const& _channel, log_topic const& _t
 void logger::update(const float _td)
 {
     m_remove_timer += _td;
-    if (m_remove_timer > 1000)
+    if (m_remove_timer > 20)
     {
         m_remove_timer = 0;
         if (!m_last_messages.empty())
