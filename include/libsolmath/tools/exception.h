@@ -9,6 +9,7 @@
 #include "format.h"
 #include <string>
 #include <exception>
+#include <cassert>
 #include <source_location>
 
 #define DEFINE_EXCEPTION()                                                           \
@@ -97,4 +98,31 @@ do {                                                          \
 
 namespace sol::math {
 DEFINE_EXCEPTION();
+
+template<class To, class From>
+    requires std::is_pointer_v<To>
+[[nodiscard]] To checked_cast(From* _ptr)
+{
+    static_assert(std::is_polymorphic_v<From>);
+
+#ifndef NDEBUG
+    assert(_ptr == nullptr || dynamic_cast<To>(_ptr) != nullptr);
+#endif
+
+    return static_cast<To>(_ptr);
+}
+
+template<class To, class From>
+    requires std::is_lvalue_reference_v<To>
+[[nodiscard]] To checked_cast(From& _ref)
+{
+    static_assert(std::is_polymorphic_v<From>);
+
+#ifndef NDEBUG
+    using TargetPointer = std::add_pointer_t<std::remove_reference_t<To> >;
+    assert(dynamic_cast<TargetPointer>(std::addressof(_ref)) != nullptr);
+#endif
+
+    return static_cast<To>(_ref);
+}
 }

@@ -83,7 +83,9 @@ void logger::log(dc::internal::DebugChannel const& _channel, log_topic const& _t
     auto const& channel   = _channel.as_string();
 
     std::string message;
-    message.reserve(channel.size() + _msg.size());
+    std::string const time = current_date("%M:%S") + " ";
+    message.reserve(time.size() + channel.size() + _msg.size());
+    message += time;
     message += channel;
     message.append(_msg);
 
