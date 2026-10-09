@@ -140,7 +140,24 @@ std::string current_date(std::string_view const _fmt)
     localtime_r(&t, &tm);
 
     std::ostringstream ss;
-    ss << std::put_time(&tm, _fmt.data());
+    if (auto pos = _fmt.find("%ms"); pos != std::string_view::npos)
+    {
+        // Parse milliseconds
+        auto const seconds = std::chrono::floor<std::chrono::seconds>(now);
+        auto const ms      = std::chrono::duration_cast<std::chrono::milliseconds>(now - seconds).count();
+        auto const digits  = std::to_string(1000 + ms).substr(1);
+
+        std::string fmt(_fmt);
+        do
+        {
+            fmt.replace(pos, 3, digits);
+            pos = fmt.find("%ms", pos + 3);
+        } while (pos != std::string::npos);
+
+        ss << std::put_time(&tm, fmt.c_str());
+    }
+    else
+        ss << std::put_time(&tm, _fmt.data());
     return ss.str();
 }
 }
