@@ -35,7 +35,7 @@ namespace dc::internal {
 }
 
 struct log_topic {
-    int id = 0;
+    std::uint64_t id = 0;
 };
 
 ///
