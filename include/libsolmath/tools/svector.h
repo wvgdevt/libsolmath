@@ -23,6 +23,11 @@ enum class erase_mode { // NOLINT
     allow_pending_add   // NOLINT
 };
 
+enum class emplace_mode { // NOLINT
+    strict,               // NOLINT
+    allow_pending_erase   // NOLINT
+};
+
 // Helper trait that extracts the "object type" stored behind a value.
 // By default, the type is assumed to already be the object type.
 // Example: pointee_type<Foo>::type == Foo
@@ -215,7 +220,7 @@ public:
     // This means every stored object must provide get_id().
     template<class U>
         requires std::constructible_from<T, U&&>
-    void emplace(U&& _x)
+    void emplace(U&& _x, emplace_mode const _mode = emplace_mode::strict)
     {
         auto* ptr_x = _ptr(_x);
         DEBUG_ASSERT(ptr_x != nullptr, math::exception, "emplace null pointer in svector!");
@@ -223,8 +228,8 @@ public:
         if (!m_iteration_modes.empty())
         {
             VERIFY(_modification_allowed(), math::exception, "emplace while const_iteration!");
-            VERIFY(!m_index_map.contains(key), math::exception, "Key already exists!");
-            _emplace_while_iteration(key, std::forward<U>(_x));
+            //VERIFY(!m_index_map.contains(key), math::exception, "Key already exists!");
+            _emplace_while_iteration(key, std::forward<U>(_x), _mode);
             return;
         }
 
@@ -375,9 +380,25 @@ private:
     // Likewise, adding the same key twice before buffers are applied is invalid.
     template<class U>
         requires std::constructible_from<T, U&&>
-    void _emplace_while_iteration(K const _key, U&& _x)
+    void _emplace_while_iteration(K const _key, U&& _x, emplace_mode const _mode)
     {
-        VERIFY(!m_set_remove_buffer_keys.contains(_key), math::exception,
+        auto const remove_it = m_set_remove_buffer_keys.find(_key);
+
+        if (_mode == emplace_mode::allow_pending_erase
+            && remove_it != m_set_remove_buffer_keys.end())
+        {
+            if constexpr (std::is_pointer_v<T>)
+            {
+                // Restore the existing committed slot, without adding a new slot.
+                // Implement this helper using your key -> dense index mapping.
+                _restore_element(_key, std::forward<U>(_x));
+            }
+
+            m_set_remove_buffer_keys.erase(remove_it);
+            return;
+        }
+
+        VERIFY(remove_it == m_set_remove_buffer_keys.end(), math::exception,
                "key already scheduled for erase in svector!");
         VERIFY(m_set_add_buffer_keys.emplace(_key).second, math::exception,
                "key already scheduled for emplace in svector!");
@@ -427,6 +448,16 @@ private:
         VERIFY(it != m_index_map.end(), math::exception, "Key not found in svector!");
         DEBUG_ASSERT(it->second < m_vector.size(), math::exception, "Out of bounds in _null_element!");
         m_vector[it->second] = nullptr;
+    }
+
+    template<class U>
+        requires std::assignable_from<T&, U&&>
+    void _restore_element(K const _key, U&& _x)
+    {
+        auto const it = m_index_map.find(_key);
+        VERIFY(it != m_index_map.end(), math::exception, "Key not found in svector!");
+        DEBUG_ASSERT(it->second < m_vector.size(), math::exception, "Out of bounds in _restore_element!");
+        m_vector[it->second] = std::forward<U>(_x);
     }
 
     // Applies all buffered modifications after iteration has finished.
