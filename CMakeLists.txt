@@ -1,4 +1,4 @@
-file(GLOB_RECURSE sources "*.h" "*.cpp")
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS "include/*.h" "src/*.h" "src/*.cpp")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(solmath ${sources})
@@ -24,7 +24,7 @@ set_target_properties(solmath_update_license PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 option(SOLMATH_BUILD_TESTS "Build solmath tests" ON)
 
-if (SOLMATH_BUILD_TESTS)
+if (SOLMATH_BUILD_TESTS AND NOT CMAKE_BUILD_TYPE MATCHES "^(Release|RelWithDebInfo|MinSizeRel)$")
     enable_testing()
 
     add_executable(solmath_tests
