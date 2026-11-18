@@ -54,7 +54,7 @@ file(GLOB_RECURSE SOURCE_FILES
 set(EXCLUDE_SUBSTRINGS
         "/build/"
         "/.git/"
-        "/third_party/"
+        "/license/"
         "/external/"
         "/_deps/"
 )

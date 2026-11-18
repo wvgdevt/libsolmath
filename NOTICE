@@ -1,5 +1,13 @@
-This product includes MagicEnum by Daniil Goncharov.
-MagicEnum is licensed under the MIT License.
+libsolmath — dependency notices
 
-This product includes fmt Copyright (c) 2012 - present, Victor Zverovich and {fmt} contributors
-Fmt is licensed under the MIT License.
+Direct dependencies: fmt, MagicEnum.
+
+Full copyright notices and license terms are in the files listed below.
+Transitive and embedded components are identified so this bundle is usable
+without relying on another library's notice directory.
+
+- fmt (MIT), compiled dependency: license/FMT_LICENSE
+- MagicEnum (MIT), public headers: license/MAGICENUM_LICENSE
+
+Dependency licenses do not replace this project's own license.
+Build-tool, test-fixture and manual licenses are not included as runtime licenses.
